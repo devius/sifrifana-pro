@@ -14,7 +14,7 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 
 ```
 index.html              # Entire site: markup, styles (<style>), and scripts (<script type="module">)
-neon-cursor.js          # Neon 3D tubes cursor trail (based on threejs-toys neonCursor, MIT)
+bglines.js              # Scroll-reactive wavy background lines (based on Cuberto bglines, MIT)
 three.module.js         # Three.js v0.140.0 (vendored, ES module)
 7qt6d4q6-683x1024.jpg   # Hero portrait photo (used 3 times for chromatic aberration effect)
 videos/                  # Local MP4 files (gitignored) downloaded via yt-dlp from sifrifana.pro YouTube embeds
@@ -46,7 +46,7 @@ CLAUDE.md               # This file
 
 ## Key sections (in DOM order)
 
-1. **Neon Background** (`#neon-bg`) — Fixed full-viewport container for the neon cursor trail canvas
+1. **Background Lines** (`#bg-lines`) — Fixed full-viewport canvas with scroll-reactive wavy lines
 2. **Header** — Fixed top nav with logo + navigation links; becomes translucent white with backdrop blur on scroll (`.scrolled` class)
 3. **Scroll Progress** — Fixed right-side indicator: vertical bar fill + dot buttons for section navigation + scroll-to-top button (hidden on screens <= 1024px)
 4. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, UpWork/LinkedIn CTA buttons
@@ -62,14 +62,14 @@ CLAUDE.md               # This file
 
 All JS is in a single `<script type="module">` block at the end of `<body>`. Major systems:
 
-### Neon cursor background (`neon-cursor.js`)
-- 3D neon tube trail effect using Three.js WebGL (OrthographicCamera, ShaderMaterial with signed-distance bezier curves)
-- Based on threejs-toys neonCursor by soju22/klevron (MIT) — de-minified and customized
-- Transparent canvas with alpha blending — tubes render over the white page background
-- Fixed navy blue (#2D628C) tube color — no color cycling or click-to-randomize
-- Interactive: mouse/pointer movement generates glowing tube trail
-- Idle animation: when pointer leaves, tubes orbit in a gentle circular pattern (`sleepRadiusX/Y`, `sleepTimeCoefX/Y`)
-- Container is `<div id="neon-bg">` with `position: fixed; z-index: 0`; page content overlays via `z-index: 1+`
+### Background lines (`bglines.js`)
+- 20 horizontal wavy lines rendered via Three.js WebGL (OrthographicCamera, custom vertex shader)
+- Based on Cuberto bglines (MIT) — ported to BufferGeometry for Three.js v0.140+ compatibility
+- Lines undulate gently over time using sinusoidal math in the vertex shader
+- Scroll-reactive: `window.scrollY` drives wave phase shift with smooth lerp interpolation
+- No cursor/touch interaction — purely scroll-driven
+- Navy blue lines at low opacity on transparent canvas (`color: [0.176, 0.384, 0.549, 0.25]`)
+- Canvas is `<canvas id="bg-lines">` with `position: fixed; z-index: 0; pointer-events: none`
 - Vendored Three.js (`three.module.js`) imported locally — no CDN dependency at runtime
 
 ### Video player controls
@@ -108,7 +108,7 @@ All JS is in a single `<script type="module">` block at the end of `<body>`. Maj
 ## Important conventions
 
 - All styles are inline in `<style>` — no external CSS files
-- All scripts are inline in `<script type="module">` — except `neon-cursor.js` and `three.module.js` which are separate ES modules
+- All scripts are inline in `<script type="module">` — except `bglines.js` and `three.module.js` which are separate ES modules
 - SVG icons are inline throughout (no icon library)
 - Section IDs don't always match their visual names (e.g., `#about` is the Videos section, `#services` is the Services section)
 - Videos are referenced by YouTube ID filenames (e.g., `videos/wla3GQNoP5Y.mp4`)
