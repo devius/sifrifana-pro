@@ -5,7 +5,7 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 ## Stack
 
 - Single `index.html` file (HTML + inline CSS + inline JS)
-- No build tools, frameworks, or package manager — open `index.html` directly in a browser
+- No build tools, frameworks, or package manager — must be served via HTTP server (not `file://`) due to `config.json` fetch
 - Use Playwright (`node` + `require('playwright')`) to scrape external website content (e.g. sifrifana.pro) — WebFetch returns 403 for this domain
 - Google Fonts loaded via CDN: Josefin Sans (weights 300, 400, 600)
 
@@ -13,6 +13,9 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 
 ```
 index.html              # Entire site: markup, styles (<style>), and scripts (<script type="module">)
+webgl-fluid.js          # WebGL fluid simulation background (MIT, Pavel Dobryakov / Thomas Kabalin)
+config.json             # Fluid simulation parameters (colors, bloom, sunrays, dissipation, etc.)
+LDR_LLL1_0.png          # Dithering texture used by the fluid bloom shader
 7qt6d4q6-683x1024.jpg   # Hero portrait photo (used 3 times for chromatic aberration effect)
 videos/                  # Local MP4 files (gitignored) downloaded via yt-dlp from sifrifana.pro YouTube embeds
 CLAUDE.md               # This file
@@ -58,14 +61,13 @@ CLAUDE.md               # This file
 
 All JS is in a single `<script type="module">` block at the end of `<body>`. Major systems:
 
-### WebGL fog overlay
-- Creates a `<canvas id="fog-canvas">` fixed behind all content (`z-index: 0`)
-- Renders volumetric cloud effect using simplex noise (Ashima Arts, public domain) with FBM
-- Clouds fade in while scrolling, fade out after 800ms idle (`SCROLL_IDLE_MS`)
-- Performance-adaptive: samples FPS for first 60 frames, disables fog if below 30fps
-- Mobile uses 4 noise octaves vs 6 on desktop; canvas resolution is halved on mobile
-- Pauses rendering when tab is hidden (`visibilitychange`)
-- Config object: `FOG_CONFIG` with `DPR_SCALE`, `DPR_CAP`, `MOBILE_BP`, `FPS_THRESHOLD`, `FPS_SAMPLE_FRAMES`
+### WebGL fluid background (`webgl-fluid.js`)
+- Navier-Stokes fluid simulation running entirely on the GPU via WebGL (WebGL2 with WebGL1 fallback)
+- Loaded as a separate `<script src="webgl-fluid.js">` (not a module), targets the first `<canvas>` element in the DOM
+- Configuration loaded from `config.json` via fetch — key settings: `BACK_COLOR` (matches `#0b1a2b`), `BLOOM`, `SUNRAYS`, `CURL`, `DENSITY_DISSIPATION`
+- Requires `LDR_LLL1_0.png` dithering texture in the same directory
+- Interactive: mouse movement and touch create fluid splats; keyboard `P` pauses, `Space` fires random splats
+- Canvas is `position: fixed` behind all content; page content overlays it via `z-index: 1+`
 
 ### Video player controls
 - Event delegation via `querySelectorAll('.video-overlay')` — handles play/pause, mute, and click-to-pause
