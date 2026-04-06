@@ -127,13 +127,17 @@ function fragmentShader(shaderPoints) {
       col += 10.0 * vec3(smoothstep(uSize.x, 0.0, dist));
       col += glow * uColor;
 
+      // Cut off faint glow that would tint the whole background
+      float brightness = max(col.r, max(col.g, col.b));
+      col *= smoothstep(0.08, 0.3, brightness);
+
       // Tone mapping
       col = 1.0 - exp(-col);
       col = pow(col, vec3(0.4545));
 
-      // Alpha = brightness so background shows through
+      // Alpha from brightness — fully transparent where there is no tube
       float alpha = max(col.r, max(col.g, col.b));
-      alpha = smoothstep(0.01, 0.15, alpha);
+      alpha = smoothstep(0.05, 0.25, alpha);
       gl_FragColor = vec4(col, alpha);
     }
   `;
