@@ -5,7 +5,8 @@
  *
  * Modifications from original:
  * - Transparent canvas with alpha blending (tubes render over page bg)
- * - Fixed navy blue tube color (#2D628C) instead of cycling colors
+ * - Navy-blue-based color cycling (blue ↔ cyan) instead of magenta ↔ blue
+ * - Touch + scroll support for mobile/iPad
  * - Idle animation orbits around section content areas
  * - Click-to-randomize disabled
  * - De-minified and self-contained (no external threejs-toys dependency)
@@ -16,34 +17,83 @@ import {
   SplineCurve, Vector3, Color, PlaneGeometry, ShaderMaterial, Mesh
 } from './three.module.js';
 
-/* ── Pointer helper ── */
-function setupPointer({ domElement, onMove, onLeave }) {
+/* ── Pointer + touch helper ── */
+function setupInput({ domElement, onMove, onLeave }) {
   const position = new Vector2();
   const nPosition = new Vector2();
   const lastPosition = new Vector2();
   const delta = new Vector2();
-  const state = { position, nPosition, hover: false };
+  const state = { position, nPosition, active: false };
 
-  function updatePos(e) {
+  function updateFromClient(clientX, clientY) {
     const rect = domElement.getBoundingClientRect();
-    position.x = e.clientX - rect.left;
-    position.y = e.clientY - rect.top;
+    position.x = clientX - rect.left;
+    position.y = clientY - rect.top;
     nPosition.x = (position.x / rect.width) * 2 - 1;
     nPosition.y = -(position.y / rect.height) * 2 + 1;
   }
 
-  domElement.addEventListener('pointermove', e => {
-    updatePos(e);
+  function handleMove(clientX, clientY) {
+    updateFromClient(clientX, clientY);
     delta.copy(position).sub(lastPosition);
-    if (!state.hover) state.hover = true;
+    state.active = true;
     onMove({ position, nPosition, delta });
     lastPosition.copy(position);
+  }
+
+  /* Pointer events (desktop) */
+  domElement.addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return; // handled by touch events
+    handleMove(e.clientX, e.clientY);
   });
 
-  domElement.addEventListener('pointerleave', () => {
-    state.hover = false;
+  domElement.addEventListener('pointerleave', e => {
+    if (e.pointerType === 'touch') return;
+    state.active = false;
     onLeave();
   });
+
+  /* Touch events (iPad / mobile) */
+  domElement.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    lastPosition.set(t.clientX - domElement.getBoundingClientRect().left,
+                     t.clientY - domElement.getBoundingClientRect().top);
+    handleMove(t.clientX, t.clientY);
+  }, { passive: true });
+
+  domElement.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    handleMove(t.clientX, t.clientY);
+  }, { passive: true });
+
+  domElement.addEventListener('touchend', () => {
+    state.active = false;
+    onLeave();
+  }, { passive: true });
+
+  /* Also track scroll as movement (makes idle tube react to scroll) */
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const dy = window.scrollY - lastScrollY;
+    lastScrollY = window.scrollY;
+    if (!state.active && Math.abs(dy) > 2) {
+      // Nudge the trail head based on scroll direction
+      const rect = domElement.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      updateFromClient(cx, cy - dy * 2);
+      delta.set(0, -dy * 2);
+      state.active = true;
+      onMove({ position, nPosition, delta });
+      lastPosition.copy(position);
+      // Return to idle after a short pause
+      clearTimeout(state._scrollTimer);
+      state._scrollTimer = setTimeout(() => {
+        state.active = false;
+        onLeave();
+      }, 300);
+    }
+  }, { passive: true });
 
   return state;
 }
@@ -149,15 +199,13 @@ export function initNeonCursor(el, opts = {}) {
     shaderPoints: 16,
     curvePoints: 80,
     curveLerp: 0.5,
-    radius1: 5,
-    radius2: 30,
+    radius1: 3,
+    radius2: 15,
     velocityTreshold: 10,
     sleepRadiusX: 200,
     sleepRadiusY: 200,
     sleepTimeCoefX: 0.002,
     sleepTimeCoefY: 0.0015,
-    // Navy blue: #2D628C
-    color: new Color(0x2D628C),
     ...opts,
   };
 
@@ -174,7 +222,7 @@ export function initNeonCursor(el, opts = {}) {
   const uRatio = { value: new Vector2() };
   const uSize = { value: new Vector2() };
   const uPoints = { value: new Array(config.shaderPoints).fill(0).map(() => new Vector2()) };
-  const uColor = { value: config.color.clone() };
+  const uColor = { value: new Color(0x2D628C) };
 
   /* Renderer (with alpha for transparency) */
   const canvas = document.createElement('canvas');
@@ -216,9 +264,9 @@ export function initNeonCursor(el, opts = {}) {
   resize();
   window.addEventListener('resize', resize);
 
-  /* Pointer */
-  setupPointer({
-    domElement: el,
+  /* Input — listen on document so touch/pointer works through content layers */
+  setupInput({
+    domElement: document.documentElement,
     onMove({ nPosition, delta }) {
       pointerActive = true;
       const px = 0.5 * nPosition.x * uRatio.value.x;
@@ -257,10 +305,24 @@ export function initNeonCursor(el, opts = {}) {
       const rx = config.sleepRadiusX * (uRatio.value.x > 1 ? 1 : uRatio.value.x) / width * uRatio.value.x;
       const ry = config.sleepRadiusY * (uRatio.value.y > 1 ? 1 : uRatio.value.y) / height * uRatio.value.y;
       spline.points[0].set(rx * Math.cos(cx), ry * Math.sin(cy));
+
+      /* Slow color cycle in idle: navy blue ↔ cyan */
+      const t = time * 0.0008;
+      const r = 0.10 + 0.08 * Math.cos(t);
+      const g = 0.35 + 0.15 * Math.sin(t * 0.7);
+      const b = 0.55 + 0.15 * Math.cos(t * 0.5);
+      uColor.value.setRGB(r, g, b);
     }
 
-    /* Fixed navy blue color — no cycling */
-    uColor.value.copy(config.color);
+    /* Active: velocity-based color intensity (brighter when moving fast) */
+    if (pointerActive) {
+      const v = velocity.z;
+      const r = 0.10 + 0.15 * v;
+      const g = 0.35 + 0.20 * v;
+      const b = 0.55 + 0.25 * v;
+      uColor.value.setRGB(r, g, b);
+      velocity.multiplyScalar(0.95);
+    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
