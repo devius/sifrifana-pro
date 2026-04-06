@@ -5,8 +5,7 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 ## Stack
 
 - Single `index.html` file (HTML + inline CSS + inline JS)
-- No build tools, frameworks, or package manager — must be served via HTTP server (not `file://`) due to ES module imports
-- Three.js v0.140.0 vendored locally (`three.module.js`) — no CDN at runtime
+- No build tools, frameworks, or package manager
 - Use Playwright (`node` + `require('playwright')`) to scrape external website content (e.g. sifrifana.pro) — WebFetch returns 403 for this domain
 - Google Fonts loaded via CDN: Josefin Sans (weights 300, 400, 600)
 
@@ -14,8 +13,6 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 
 ```
 index.html              # Entire site: markup, styles (<style>), and scripts (<script type="module">)
-bglines.js              # Scroll-reactive wavy background lines (based on Cuberto bglines, MIT)
-three.module.js         # Three.js v0.140.0 (vendored, ES module)
 7qt6d4q6-683x1024.jpg   # Hero portrait photo (used 3 times for chromatic aberration effect)
 videos/                  # Local MP4 files (gitignored) downloaded via yt-dlp from sifrifana.pro YouTube embeds
 CLAUDE.md               # This file
@@ -46,8 +43,7 @@ CLAUDE.md               # This file
 
 ## Key sections (in DOM order)
 
-1. **Background Lines** (`#bg-lines`) — Fixed full-viewport canvas with scroll-reactive wavy lines
-2. **Header** — Fixed top nav with logo + navigation links; becomes translucent white with backdrop blur on scroll (`.scrolled` class)
+1. **Header** — Fixed top nav with logo + navigation links; becomes translucent white with backdrop blur on scroll (`.scrolled` class)
 3. **Scroll Progress** — Fixed right-side indicator: vertical bar fill + dot buttons for section navigation + scroll-to-top button (hidden on screens <= 1024px)
 4. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, UpWork/LinkedIn CTA buttons
 5. **Videos** (`#about`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px)
@@ -61,16 +57,6 @@ CLAUDE.md               # This file
 ## JavaScript architecture (inline `<script type="module">`)
 
 All JS is in a single `<script type="module">` block at the end of `<body>`. Major systems:
-
-### Background lines (`bglines.js`)
-- 20 horizontal wavy lines rendered via Three.js WebGL (OrthographicCamera, custom vertex shader)
-- Based on Cuberto bglines (MIT) — ported to BufferGeometry for Three.js v0.140+ compatibility
-- Lines undulate gently over time using sinusoidal math in the vertex shader
-- Scroll-reactive: `window.scrollY` drives wave phase shift with smooth lerp interpolation
-- No cursor/touch interaction — purely scroll-driven
-- Navy blue lines at low opacity on transparent canvas (`color: [0.176, 0.384, 0.549, 0.25]`)
-- Canvas is `<canvas id="bg-lines">` with `position: fixed; z-index: 0; pointer-events: none`
-- Vendored Three.js (`three.module.js`) imported locally — no CDN dependency at runtime
 
 ### Video player controls
 - Event delegation via `querySelectorAll('.video-overlay')` — handles play/pause, mute, and click-to-pause
@@ -108,7 +94,7 @@ All JS is in a single `<script type="module">` block at the end of `<body>`. Maj
 ## Important conventions
 
 - All styles are inline in `<style>` — no external CSS files
-- All scripts are inline in `<script type="module">` — except `bglines.js` and `three.module.js` which are separate ES modules
+- All scripts are inline in `<script type="module">` — no external JS files
 - SVG icons are inline throughout (no icon library)
 - Section IDs don't always match their visual names (e.g., `#about` is the Videos section, `#services` is the Services section)
 - Videos are referenced by YouTube ID filenames (e.g., `videos/wla3GQNoP5Y.mp4`)

@@ -529,15 +529,6 @@
     .scroll-top:hover { color: var(--navy); border-color: rgba(45,98,140,0.5); }
     @media (max-width: 1024px) { .scroll-progress { display: none; } }
 
-    /* ── Background lines canvas ── */
-    #bg-lines {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
     /* ── Animations ── */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scrollBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
@@ -545,8 +536,6 @@
   </style>
 </head>
 <body>
-
-<canvas id="bg-lines"></canvas>
 
 <!-- Header -->
 <header class="header" id="header">
@@ -813,9 +802,6 @@
 </footer>
 
 <script type="module">
-
-import BgLines from './bglines.js';
-new BgLines(document.getElementById('bg-lines'));
 
 /* ── Video player controls ── */
 const mutedSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
