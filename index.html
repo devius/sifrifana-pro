@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sifrifana — Mariam Dikhaminjia</title>
+  <meta name="description" content="Crafting stunning visual stories. Transforming raw footage into breathtaking cinematic experiences.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy: #2D628C;
+      --navy-light: #3a7db0;
+      --navy-dark: #1e4460;
+      --heading: 'Josefin Sans', sans-serif;
+      --body: 'Century Gothic', 'Avenir', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--body);
+      color: #fff;
+      overflow-x: hidden;
+      background: #0b1a2b;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 3px; }
+
+    /* ── Header ── */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      transition: background 0.5s, box-shadow 0.5s;
+    }
+    .header.scrolled {
+      background: rgba(11,26,43,0.92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+    }
+    .header-inner {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 clamp(24px, 4vw, 80px);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 80px;
+    }
+    .logo {
+      font-family: var(--heading); font-weight: 300;
+      font-size: 1.1rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.9); text-decoration: none;
+    }
+    .nav { display: flex; gap: 40px; list-style: none; }
+    .nav a {
+      font-family: var(--heading); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.3s;
+    }
+    .nav a:hover { color: #fff; }
+
+    /* Mobile menu */
+    .menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+    .menu-btn span { display: block; width: 24px; height: 1.5px; background: rgba(255,255,255,0.7); margin: 5px 0; transition: 0.3s; }
+    @media (max-width: 768px) {
+      .nav { display: none; }
+      .menu-btn { display: block; }
+      .nav.open {
+        display: flex; flex-direction: column; align-items: center; gap: 24px;
+        position: absolute; top: 80px; left: 0; right: 0;
+        background: rgba(11,26,43,0.96); backdrop-filter: blur(12px);
+        padding: 32px 0; border-top: 1px solid rgba(255,255,255,0.1);
+      }
+    }
+
+    /* ── Sections shared ── */
+    section { position: relative; }
+
+    .container {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 clamp(24px, 4vw, 80px);
+    }
+
+    .heading {
+      font-family: var(--heading); font-weight: 300;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      line-height: 1.15; color: #fff;
+    }
+
+    /* Scroll animations */
+    .reveal {
+      opacity: 0; transform: translateY(50px);
+      transition: opacity 2.2s cubic-bezier(0.25,0.46,0.45,0.94),
+                  transform 2.2s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.3s; }
+    .reveal-delay-2 { transition-delay: 0.6s; }
+    .reveal-delay-3 { transition-delay: 0.9s; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      position: relative; z-index: 1; padding: 120px 0 80px;
+    }
+    .hero-inner {
+      display: flex; align-items: center; gap: clamp(40px, 6vw, 100px);
+      max-width: 1200px; margin: 0 auto; padding: 0 32px; width: 100%;
+    }
+    .hero-photo {
+      flex: 0 0 auto; width: clamp(280px, 35vw, 440px);
+      animation: fadeIn 1s ease-out 0.3s both;
+      position: relative;
+    }
+    .hero-photo .photo-layer {
+      width: 100%; border-radius: 4px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .hero-photo .photo-layer img {
+      width: 100%; height: auto; display: block;
+    }
+    /* Bottom layer — cyan shift */
+    .hero-photo .photo-layer--cyan {
+      position: absolute; top: 14px; left: -14px; z-index: 1;
+      mix-blend-mode: screen; opacity: 0.7;
+    }
+    .hero-photo .photo-layer--cyan img {
+      filter: saturate(0) brightness(1.1);
+    }
+    .hero-photo .photo-layer--cyan::after {
+      content: ''; position: absolute; inset: 0; border-radius: 4px;
+      background: rgba(0,245,245,0.6); mix-blend-mode: multiply;
+    }
+    /* Middle layer — magenta/red shift */
+    .hero-photo .photo-layer--red {
+      position: absolute; top: -10px; left: 12px; z-index: 2;
+      mix-blend-mode: screen; opacity: 0.7;
+    }
+    .hero-photo .photo-layer--red img {
+      filter: saturate(0) brightness(1.1);
+    }
+    .hero-photo .photo-layer--red::after {
+      content: ''; position: absolute; inset: 0; border-radius: 4px;
+      background: rgba(254,44,85,0.6); mix-blend-mode: multiply;
+    }
+    /* Top layer — original colors */
+    .hero-photo .photo-layer--original {
+      position: relative; z-index: 3;
+    }
+    .hero-text {
+      flex: 1; animation: fadeIn 1s ease-out 0.6s both;
+    }
+    .hero-logo-wrap {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .hero-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.2); }
+    .hero-title {
+      font-family: var(--heading); font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 0.3em; text-transform: uppercase; color: #fff;
+    }
+    .hero-subtitle {
+      font-family: var(--heading); font-size: 0.85rem;
+      letter-spacing: 0.15em; color: rgba(255,255,255,0.5); margin-top: 8px;
+    }
+    .hero-tagline {
+      font-family: var(--heading); font-weight: 300;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      line-height: 1.4; color: rgba(255,255,255,0.85); margin-top: 32px;
+    }
+    .hero-cta {
+      margin-top: 24px; font-family: var(--heading); font-size: 0.95rem;
+      letter-spacing: 0.08em; color: rgba(255,255,255,0.6);
+    }
+    .hero-links {
+      display: flex; gap: 20px; margin-top: 16px;
+    }
+    .hero-links a {
+      font-family: var(--heading); font-size: 0.9rem; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.8); text-decoration: none; padding: 10px 24px;
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 4px;
+      transition: background 0.3s, color 0.3s;
+    }
+    .hero-links a:hover {
+      background: rgba(255,255,255,0.15); color: #fff;
+    }
+    .scroll-hint {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      animation: fadeIn 1s ease-out 1.5s both;
+    }
+    .scroll-hint span {
+      font-family: var(--heading); font-size: 10px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.4);
+    }
+    .scroll-line {
+      width: 1px; height: 32px; background: rgba(255,255,255,0.2);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; text-align: center; }
+      .hero-photo { width: clamp(220px, 60vw, 320px); }
+      .hero-logo-wrap { justify-content: center; }
+      .hero-links { justify-content: center; }
+    }
+
+    /* ── Videos ── */
+    .videos { padding: 160px 0; position: relative; z-index: 1; }
+    .videos h2 {
+      font-size: clamp(1.8rem, 4vw, 3.2rem); max-width: 800px;
+      text-align: center; margin: 0 auto 24px;
+    }
+    .videos-subtitle {
+      text-align: center; max-width: 640px; margin: 0 auto 80px;
+      font-size: 1.05rem; line-height: 1.7; color: rgba(255,255,255,0.6);
+    }
+    .videos-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .video-item {
+      position: relative; border-radius: 8px; overflow: hidden;
+      aspect-ratio: 16/9; background: rgba(255,255,255,0.05); cursor: pointer;
+    }
+    .video-item video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    /* Custom video controls */
+    .video-overlay {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.15); backdrop-filter: blur(3px);
+      transition: opacity 0.3s; z-index: 2;
+    }
+    .video-overlay.hidden { opacity: 0; pointer-events: none; }
+    .video-overlay.hidden .vid-mute { opacity: 1; pointer-events: auto; }
+    .vid-play {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer; transition: transform 0.2s, background 0.2s;
+    }
+    .vid-play:hover { transform: scale(1.1); background: rgba(255,255,255,0.25); }
+    .vid-mute {
+      position: absolute; bottom: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; cursor: pointer; transition: background 0.2s; z-index: 3;
+    }
+    .vid-mute:hover { background: rgba(0,0,0,0.7); }
+    @media (max-width: 1024px) {
+      .videos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .videos-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Client Videos ── */
+    .client-videos { padding: 160px 0; position: relative; z-index: 1; }
+    .client-videos h2 {
+      font-size: clamp(1.8rem, 4vw, 3.2rem); max-width: 800px;
+      text-align: center; margin: 0 auto 80px;
+    }
+    .client-videos-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+    }
+    .client-video-item {
+      position: relative; border-radius: 8px; overflow: hidden;
+      aspect-ratio: 16/9; background: rgba(255,255,255,0.05); cursor: pointer;
+    }
+    .client-video-item video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .client-video-name {
+      font-family: var(--heading); font-size: 0.9rem;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.7);
+      text-align: center; margin-top: 16px;
+    }
+    @media (max-width: 768px) {
+      .client-videos-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Shorts ── */
+    .shorts { padding: 160px 0; position: relative; z-index: 1; }
+    .shorts h2 {
+      font-size: clamp(1.8rem, 4vw, 3.2rem); max-width: 800px;
+      text-align: center; margin: 0 auto 80px;
+    }
+    .shorts-grid {
+      display: flex; justify-content: center; gap: 32px;
+    }
+    .short-item {
+      position: relative; border-radius: 8px; overflow: hidden;
+      width: 280px; aspect-ratio: 9/16; background: rgba(255,255,255,0.05); cursor: pointer;
+    }
+    .short-item video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    @media (max-width: 900px) {
+      .shorts-grid { flex-wrap: wrap; }
+      .short-item { width: 240px; }
+    }
+    @media (max-width: 600px) {
+      .short-item { width: 100%; max-width: 320px; }
+    }
+
+    /* ── Services ── */
+    .services-intro { padding: 160px 0; position: relative; z-index: 1; }
+    .services-intro h2 { font-size: clamp(1.8rem, 4vw, 3.2rem); max-width: 700px; color: #fff; }
+
+    .service-card {
+      min-height: 80vh; display: flex; align-items: center;
+      position: relative; z-index: 2;
+    }
+    .service-bg {
+      position: absolute; inset: 0;
+    }
+    .service-card .container { position: relative; z-index: 2; width: 100%; }
+    .service-number {
+      width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.2);
+      transform: rotate(45deg); display: flex; align-items: center; justify-content: center;
+    }
+    .service-number span { transform: rotate(-45deg); color: rgba(255,255,255,0.6); font-size: 0.85rem; }
+    .service-label {
+      font-family: var(--heading); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-top: 16px;
+    }
+    .service-title {
+      font-family: var(--heading); font-weight: 300;
+      font-size: clamp(1.8rem, 4vw, 3rem); text-transform: uppercase;
+      color: #fff; line-height: 1.15; letter-spacing: 0.03em;
+      margin-top: 24px; max-width: 700px;
+    }
+    .service-cta {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--heading); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.7); text-decoration: none; margin-top: 40px;
+      transition: color 0.3s;
+    }
+    .service-cta:hover { color: #fff; }
+    .service-cta-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center; transition: 0.3s;
+    }
+    .service-cta:hover .service-cta-circle { background: #fff; color: var(--navy); }
+    .service-line {
+      height: 1px; background: rgba(255,255,255,0.15); margin-top: 32px;
+      transform: scaleX(0); transform-origin: left; transition: transform 1s 0.4s ease-out;
+    }
+    .service-card.visible .service-line { transform: scaleX(1); }
+
+    /* ── Stats ── */
+    .stats {
+      padding: 160px 0; position: relative; z-index: 2;
+      /* background removed — fog reveals over flat body bg */
+      overflow: hidden;
+    }
+    .stats-globe {
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .stats-ring {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      border-radius: 50%; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stats-dot {
+      position: absolute; width: 6px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 50%;
+    }
+    .stats-dot::after {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(255,255,255,0.2); animation: ping 2s ease-out infinite;
+    }
+    .stats h2 {
+      font-family: var(--heading); font-weight: 300;
+      font-size: clamp(1.8rem, 4vw, 3.2rem); text-transform: uppercase;
+      color: #fff; letter-spacing: 0.05em; text-align: center; margin-bottom: 80px;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+      text-align: center; position: relative; z-index: 2;
+    }
+    .stat-number {
+      font-family: var(--heading); font-weight: 300;
+      font-size: clamp(2.5rem, 5vw, 4.5rem); color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .stat-label {
+      font-family: var(--heading); font-size: 0.75rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-top: 16px;
+    }
+    .stats-platforms {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 32px;
+      margin-top: 96px; position: relative; z-index: 2;
+    }
+    .stats-platforms a {
+      font-family: var(--heading); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.3s;
+    }
+    .stats-platforms a:hover { color: rgba(255,255,255,0.7); }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; gap: 48px; }
+    }
+
+    /* ── Testimonials ── */
+    .testimonials {
+      padding: 160px 0; position: relative; z-index: 2;
+      /* background removed — fog reveals over flat body bg */
+      overflow: hidden;
+    }
+    .testimonials-bg {
+      position: absolute; inset: 0; opacity: 0.15;
+    }
+    .testimonials-bg div {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+    }
+    .testimonials-intro {
+      font-size: 1.05rem; line-height: 1.7; color: rgba(255,255,255,0.6);
+      max-width: 640px; margin-bottom: 80px;
+    }
+    .testimonials-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      position: relative; z-index: 2;
+    }
+    .testimonial { position: relative; }
+    .testimonial-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .testimonial-num {
+      width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.2);
+      transform: rotate(45deg); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .testimonial-num span { transform: rotate(-45deg); color: rgba(255,255,255,0.5); font-size: 0.7rem; }
+    .testimonial-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+    .testimonial q {
+      display: block; font-style: italic; color: rgba(255,255,255,0.8);
+      font-size: 1rem; line-height: 1.7; margin-bottom: 24px; quotes: none;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-dash { width: 32px; height: 1px; background: rgba(255,255,255,0.2); }
+    .testimonial-name {
+      font-family: var(--heading); font-size: 0.85rem;
+      letter-spacing: 0.1em; color: #fff;
+    }
+    .testimonial-company {
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4); margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      .testimonials-grid { grid-template-columns: 1fr; gap: 48px; }
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 160px 0 48px; position: relative; z-index: 2;
+    }
+    .footer-top { display: none; }
+    .footer-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px;
+      align-items: start;
+    }
+    .footer-nav { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-nav a {
+      font-family: var(--heading); font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.3s;
+    }
+    .footer-nav a:hover { color: #fff; }
+    .footer-center { text-align: center; }
+    .footer-cta {
+      font-family: var(--heading); font-weight: 300;
+      font-size: 1.3rem; color: #fff; margin-bottom: 16px;
+    }
+    .footer-contact { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; }
+    .footer-links a { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; text-decoration: none; }
+    .footer-upwork { color: #6fda44; }
+    .footer-linkedin { color: #0077b5; }
+    .footer-social { display: flex; justify-content: flex-end; gap: 16px; }
+    .footer-social a {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5); text-decoration: none; transition: 0.3s;
+    }
+    .footer-social a:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.4); }
+    .footer-social svg { width: 18px; height: 18px; fill: currentColor; }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 96px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer-logo { display: flex; align-items: center; gap: 12px; }
+    .footer-logo-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+    .footer-logo-text {
+      font-family: var(--heading); font-weight: 300;
+      font-size: 1.1rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fff;
+    }
+    .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .footer-social { justify-content: center; }
+      .footer-bottom { flex-direction: column; gap: 16px; }
+    }
+
+    /* ── Scroll progress (right side) ── */
+    .scroll-progress {
+      position: fixed; right: 32px; top: 50%; transform: translateY(-50%);
+      z-index: 40; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .scroll-bar { width: 2px; height: 128px; background: rgba(255,255,255,0.1); border-radius: 1px; overflow: hidden; }
+    .scroll-bar-fill { width: 100%; background: rgba(255,255,255,0.6); border-radius: 1px; transition: height 0.1s; }
+    .scroll-dots { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .scroll-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2);
+      transition: 0.3s; cursor: pointer; border: none; padding: 0;
+    }
+    .scroll-dot.active { background: rgba(255,255,255,0.8); transform: scale(1.3); }
+    .scroll-top {
+      margin-top: 8px; width: 24px; height: 24px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2); background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.4); transition: 0.3s;
+    }
+    .scroll-top:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+    @media (max-width: 1024px) { .scroll-progress { display: none; } }
+
+    /* ── Fog canvas ── */
+    #fog-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scrollBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+    @keyframes ping { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <a href="#hero" class="logo">Sifrifana</a>
+    <ul class="nav" id="nav">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">Skillset</a></li>
+      <li><a href="#services">Videos</a></li>
+      <li><a href="#testimonials">Testimonials</a></li>
+    </ul>
+    <button class="menu-btn" id="menu-btn" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress">
+  <div class="scroll-bar"><div class="scroll-bar-fill" id="scroll-fill"></div></div>
+  <div class="scroll-dots">
+    <button class="scroll-dot active" data-target="hero"></button>
+    <button class="scroll-dot" data-target="about"></button>
+    <button class="scroll-dot" data-target="services"></button>
+    <button class="scroll-dot" data-target="testimonials"></button>
+  </div>
+  <button class="scroll-top" id="scroll-top">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 7l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-photo">
+      <div class="photo-layer photo-layer--cyan"><img src="7qt6d4q6-683x1024.jpg" alt=""></div>
+      <div class="photo-layer photo-layer--red"><img src="7qt6d4q6-683x1024.jpg" alt=""></div>
+      <div class="photo-layer photo-layer--original"><img src="7qt6d4q6-683x1024.jpg" alt="Mariam Dikhaminjia"></div>
+    </div>
+    <div class="hero-text">
+      <div class="hero-logo-wrap">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <circle cx="25" cy="8" r="3" fill="#fff" opacity="0.6"/>
+          <circle cx="15" cy="16" r="2.5" fill="#fff" opacity="0.5"/>
+          <circle cx="35" cy="16" r="2.5" fill="#fff" opacity="0.5"/>
+          <circle cx="25" cy="20" r="3" fill="#fff" opacity="0.7"/>
+          <circle cx="10" cy="24" r="2" fill="#fff" opacity="0.4"/>
+          <circle cx="40" cy="24" r="2" fill="#fff" opacity="0.4"/>
+          <circle cx="20" cy="28" r="2.5" fill="#fff" opacity="0.5"/>
+          <circle cx="30" cy="28" r="2.5" fill="#fff" opacity="0.5"/>
+          <circle cx="25" cy="35" r="3" fill="#fff" opacity="0.6"/>
+          <line x1="25" y1="38" x2="25" y2="50" stroke="#fff" stroke-width="1" opacity="0.4"/>
+        </svg>
+        <div class="hero-divider"></div>
+        <h1 class="hero-title">Sifrifana</h1>
+      </div>
+      <p class="hero-subtitle">Mariam Dikhaminjia</p>
+      <p class="hero-tagline">Let's turn your vision<br>into a cinematic masterpiece.</p>
+      <p class="hero-cta">Contact me today!</p>
+      <div class="hero-links">
+        <a href="https://upwork.com" target="_blank" rel="noopener">UpWork</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll down to discover</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Videos -->
+<section class="videos" id="about">
+  <div class="container">
+    <h2 class="heading reveal">Videos</h2>
+    <p class="videos-subtitle reveal reveal-delay-1">Great editing isn't just about cutting clips—it's about storytelling.<br>See how I bring stories to life.</p>
+    <div class="videos-grid">
+      <div class="video-item reveal"><video src="videos/wla3GQNoP5Y.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="video-item reveal reveal-delay-1"><video src="videos/vbaoF6MCg_g.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="video-item reveal reveal-delay-2"><video src="videos/vmh19wCaQPw.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="video-item reveal"><video src="videos/0MdZJgt2I90.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="video-item reveal reveal-delay-1"><video src="videos/lImTCDvE-3E.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="video-item reveal reveal-delay-2"><video src="videos/ub5IFmfV6ac.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Client Videos -->
+<section class="client-videos">
+  <div class="container">
+    <h2 class="heading reveal">Clients Talk About Me</h2>
+    <div class="client-videos-grid">
+      <div class="reveal">
+        <div class="client-video-item"><video src="videos/c2fXWjpqa_g.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+        <p class="client-video-name">Karl</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="client-video-item"><video src="videos/MbZ18Ye3_QM.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+        <p class="client-video-name">David</p>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="client-video-item"><video src="videos/20flCmJEwno.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+        <p class="client-video-name">Lucas</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Shorts -->
+<section class="shorts">
+  <div class="container">
+    <h2 class="heading reveal">Shorts</h2>
+    <div class="shorts-grid">
+      <div class="short-item reveal"><video src="videos/9P2ECvceBQY.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="short-item reveal reveal-delay-1"><video src="videos/snNxwjFXNaI.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+      <div class="short-item reveal reveal-delay-2"><video src="videos/hPzuCPsXRhA.mp4" preload="metadata" muted></video><div class="video-overlay"><button class="vid-play"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg></button><button class="vid-mute" title="Unmute"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section id="services">
+  <div class="services-intro">
+    <div class="container">
+      <h2 class="heading reveal">Why work with me? I deliver results through my different specializations.</h2>
+      <div style="display:flex;align-items:center;gap:16px;margin-top:48px" class="reveal reveal-delay-1">
+        <div class="about-circle"><div class="about-circle-inner"></div></div>
+        <span style="font-family:var(--heading);font-size:0.85rem;color:rgba(45,98,140,0.6);letter-spacing:0.1em">My specializations</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="service-card reveal" id="svc-1">
+    <div class="service-bg"></div>
+    <div class="container">
+      <div class="service-number"><span>1</span></div>
+      <p class="service-label">Cinematic Touch</p>
+      <h3 class="service-title">Every project gets a professional, polished look.</h3>
+      <a href="#" class="service-cta">Cinematic Touch <span class="service-cta-circle"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transform:rotate(-45deg)"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      <div class="service-line"></div>
+    </div>
+  </div>
+
+  <div class="service-card reveal" id="svc-2">
+    <div class="service-bg"></div>
+    <div class="container">
+      <div class="service-number"><span>2</span></div>
+      <p class="service-label">Fast &amp; Reliable</p>
+      <h3 class="service-title">Tight deadlines? No problem.</h3>
+      <a href="#" class="service-cta">Fast &amp; Reliable <span class="service-cta-circle"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transform:rotate(-45deg)"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      <div class="service-line"></div>
+    </div>
+  </div>
+
+  <div class="service-card reveal" id="svc-3">
+    <div class="service-bg"></div>
+    <div class="container">
+      <div class="service-number"><span>3</span></div>
+      <p class="service-label">Creative Storytelling</p>
+      <h3 class="service-title">Your video isn't just edited, it's crafted for maximum impact.</h3>
+      <a href="#" class="service-cta">Creative Storytelling <span class="service-cta-circle"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transform:rotate(-45deg)"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      <div class="service-line"></div>
+    </div>
+  </div>
+
+  <div class="service-card reveal" id="svc-4">
+    <div class="service-bg"></div>
+    <div class="container">
+      <div class="service-number"><span>4</span></div>
+      <p class="service-label">Premium Editing</p>
+      <h3 class="service-title">Expertise in Adobe Premiere Pro, CapCut, and more.</h3>
+      <a href="#" class="service-cta">Premium Editing <span class="service-cta-circle"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transform:rotate(-45deg)"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      <div class="service-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats" id="stats">
+  <div class="stats-globe">
+    <div class="stats-ring" style="width:800px;height:800px"></div>
+    <div class="stats-ring" style="width:600px;height:600px"></div>
+    <div class="stats-ring" style="width:400px;height:400px"></div>
+    <div class="stats-dot" style="top:35%;left:30%"></div>
+    <div class="stats-dot" style="top:40%;left:50%"></div>
+    <div class="stats-dot" style="top:45%;left:65%"></div>
+    <div class="stats-dot" style="top:55%;left:40%"></div>
+    <div class="stats-dot" style="top:50%;left:55%"></div>
+    <div class="stats-dot" style="top:38%;left:72%"></div>
+  </div>
+  <div class="container" style="position:relative;z-index:2">
+    <h2 class="reveal">Trusted by clients worldwide</h2>
+    <div class="stats-grid">
+      <div class="reveal">
+        <div class="stat-number" data-target="30">0</div>
+        <p class="stat-label">Clients</p>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div class="stat-number" data-target="160">0</div>
+        <p class="stat-label">Projects</p>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="stat-number" data-target="3081">0</div>
+        <p class="stat-label">Videos</p>
+      </div>
+    </div>
+    <div class="stats-platforms reveal reveal-delay-3">
+      <a href="#">YouTube</a><a href="#">Instagram</a><a href="#">Behance</a><a href="#">Upwork</a><a href="#">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials" id="testimonials">
+  <div class="testimonials-bg">
+  </div>
+  <div class="container">
+    <p class="testimonials-intro reveal">I am committed to delivering exceptional quality in every project. Here's what my clients have to say about working with me.</p>
+    <div class="testimonials-grid" id="testimonials-grid"></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-top"></div>
+  <div class="container">
+    <div class="footer-grid reveal">
+      <ul class="footer-nav">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#about">Skillset</a></li>
+        <li><a href="#services">Videos</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+      </ul>
+      <div class="footer-center">
+        <p class="footer-cta">Let's turn your vision into a cinematic masterpiece.</p>
+        <p class="footer-contact">Contact me today!</p>
+        <div class="footer-links">
+          <a href="https://upwork.com" target="_blank" rel="noopener" class="footer-upwork">Upwork</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener" class="footer-linkedin">LinkedIn</a>
+        </div>
+      </div>
+      <div class="footer-social">
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
+        <a href="#" aria-label="Behance"><svg viewBox="0 0 24 24"><path d="M6.938 4.503c.702 0 1.34.06 1.92.188.577.13 1.07.33 1.485.61.41.28.733.65.96 1.12.225.47.34 1.05.34 1.73 0 .74-.17 1.36-.507 1.86-.338.5-.837.9-1.502 1.22.906.26 1.576.72 2.022 1.37.448.66.665 1.45.665 2.36 0 .75-.13 1.39-.41 1.93-.28.55-.67 1-1.16 1.35-.48.348-1.05.6-1.67.767-.63.165-1.27.25-1.95.25H0V4.51h6.938v-.007zM6.545 10.16c.6 0 1.09-.16 1.47-.48.38-.32.57-.75.57-1.29 0-.31-.06-.57-.17-.78-.12-.21-.27-.38-.48-.51-.2-.13-.44-.22-.72-.27-.28-.06-.57-.08-.87-.08H3.41v3.41h3.14v.01zm.18 5.71c.34 0 .66-.04.96-.12.3-.08.56-.21.78-.38.22-.17.39-.39.52-.67.12-.28.18-.62.18-1.02 0-.81-.24-1.39-.71-1.74-.48-.35-1.1-.53-1.87-.53H3.41v4.46h3.32l-.007.01zM15.105 4.503h6.49v1.88h-6.49V4.503zM21.508 12.53c-.24-.66-.59-1.2-1.04-1.64-.45-.43-.99-.76-1.61-.98-.63-.22-1.3-.33-2.02-.33-.74 0-1.42.12-2.05.36-.63.24-1.17.58-1.64 1.02-.46.44-.82.98-1.08 1.62-.26.64-.39 1.36-.39 2.15 0 .81.13 1.53.4 2.17.27.64.63 1.18 1.1 1.61.46.43 1.01.76 1.63.98.63.22 1.3.33 2.02.33 1.08 0 2-.27 2.75-.82.75-.54 1.31-1.38 1.67-2.51h-2.83c-.09.31-.31.58-.67.8-.36.22-.77.33-1.24.33-.72 0-1.27-.2-1.67-.61-.39-.41-.62-1.06-.67-1.95h7.34c.05-.47.05-.89 0-1.28l-.02-.03zm-7.25.78c.1-.73.38-1.28.82-1.66.44-.37.99-.56 1.67-.56.33 0 .64.06.92.17.28.12.53.28.73.49.21.21.37.45.5.73.12.27.19.57.22.88h-4.86v-.05z"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-bottom reveal">
+      <div class="footer-logo">
+        <svg width="30" height="30" viewBox="0 0 50 50" fill="none">
+          <circle cx="25" cy="10" r="3" fill="#fff" opacity="0.5"/>
+          <circle cx="17" cy="18" r="2.5" fill="#fff" opacity="0.4"/>
+          <circle cx="33" cy="18" r="2.5" fill="#fff" opacity="0.4"/>
+          <circle cx="25" cy="22" r="3" fill="#fff" opacity="0.6"/>
+          <circle cx="25" cy="34" r="2.5" fill="#fff" opacity="0.5"/>
+          <line x1="25" y1="37" x2="25" y2="48" stroke="#fff" stroke-width="1" opacity="0.3"/>
+        </svg>
+        <div class="footer-logo-divider"></div>
+        <span class="footer-logo-text">Sifrifana</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 | Sifrifana - All rights reserved</p>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+
+/* ══════════════════════════════════════════════════════════
+   WebGL Fog Overlay — content-aware volumetric reveal
+   ══════════════════════════════════════════════════════════ */
+
+const FOG_CONFIG = {
+  DPR_SCALE: 0.75,
+  DPR_CAP: 2,
+  MOBILE_BP: 768,
+  FPS_THRESHOLD: 30,
+  FPS_SAMPLE_FRAMES: 60,
+};
+
+const fogCanvas = document.createElement('canvas');
+fogCanvas.id = 'fog-canvas';
+document.body.prepend(fogCanvas);
+
+const gl = fogCanvas.getContext('webgl', {
+  alpha: true,
+  premultipliedAlpha: false,
+  antialias: false,
+});
+
+if (gl) {
+  /* ── Shader sources ── */
+  const VERT_SRC = `
+    attribute vec2 aPos;
+    varying vec2 vUv;
+    void main() {
+      vUv = aPos * 0.5 + 0.5;
+      gl_Position = vec4(aPos, 0.0, 1.0);
+    }
+  `;
+
+  const FRAG_SRC = `
+    precision mediump float;
+
+    varying vec2 vUv;
+    uniform float uTime;
+    uniform float uCloudOpacity;
+    uniform float uIsMobile;
+    uniform float uScrollReveal;
+
+    /* ── Ashima Arts 3D simplex noise (public domain) ── */
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
+    vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+    vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+    float snoise(vec3 v) {
+      const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+      const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+      vec3 i = floor(v + dot(v, C.yyy));
+      vec3 x0 = v - i + dot(i, C.xxx);
+      vec3 g = step(x0.yzx, x0.xyz);
+      vec3 l = 1.0 - g;
+      vec3 i1 = min(g.xyz, l.zxy);
+      vec3 i2 = max(g.xyz, l.zxy);
+      vec3 x1 = x0 - i1 + C.xxx;
+      vec3 x2 = x0 - i2 + C.yyy;
+      vec3 x3 = x0 - D.yyy;
+      i = mod289(i);
+      vec4 p = permute(permute(permute(
+        i.z + vec4(0.0, i1.z, i2.z, 1.0))
+        + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+        + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+      float n_ = 0.142857142857;
+      vec3 ns = n_ * D.wyz - D.xzx;
+      vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+      vec4 x_ = floor(j * ns.z);
+      vec4 y_ = floor(j - 7.0 * x_);
+      vec4 x = x_ * ns.x + ns.yyyy;
+      vec4 y = y_ * ns.x + ns.yyyy;
+      vec4 h = 1.0 - abs(x) - abs(y);
+      vec4 b0 = vec4(x.xy, y.xy);
+      vec4 b1 = vec4(x.zw, y.zw);
+      vec4 s0 = floor(b0)*2.0 + 1.0;
+      vec4 s1 = floor(b1)*2.0 + 1.0;
+      vec4 sh = -step(h, vec4(0.0));
+      vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+      vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+      vec3 p0 = vec3(a0.xy, h.x);
+      vec3 p1 = vec3(a0.zw, h.y);
+      vec3 p2 = vec3(a1.xy, h.z);
+      vec3 p3 = vec3(a1.zw, h.w);
+      vec4 norm = taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+      p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+      vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+      m = m * m;
+      return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+    }
+
+    /* ── Billowy cloud FBM ──
+       Uses 1-abs(noise) per octave for puffy cumulus ridges */
+    float cloudFBM(vec2 p, float t, int octaves) {
+      float val = 0.0;
+      float amp = 0.5;
+      float freq = 1.0;
+      float drift = t * 0.06;
+      for (int i = 0; i < 6; i++) {
+        if (i >= octaves) break;
+        float n = snoise(vec3(p * freq + drift, t * 0.04 + float(i) * 1.7));
+        val += amp * (1.0 - abs(n));   /* billowy inversion */
+        freq *= 2.2;
+        amp *= 0.52;
+        drift *= 1.3;
+      }
+      return val;
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      float t = uTime;
+      int octaves = (uIsMobile > 0.5) ? 4 : 6;
+
+      /* ── Scroll edge: clouds exist below scroll line ── */
+      float scrollY = 1.0 - uv.y;
+      float scrollEdge = smoothstep(uScrollReveal - 0.2, uScrollReveal + 0.05, scrollY);
+
+      /* ── Two cloud layers for depth ── */
+      /* Large background clouds */
+      float bigClouds = cloudFBM(uv * 1.8 + vec2(0.0, t * 0.01), t, octaves);
+      bigClouds = smoothstep(0.3, 0.9, bigClouds);
+      bigClouds = pow(bigClouds, 1.4);
+
+      /* Smaller detail clouds */
+      float detailClouds = cloudFBM(uv * 3.5 + vec2(t * 0.02, 5.0), t * 1.2, octaves);
+      detailClouds = smoothstep(0.35, 0.85, detailClouds);
+      detailClouds = pow(detailClouds, 1.6);
+
+      /* Combine: big shapes with detail */
+      float clouds = bigClouds * 0.7 + detailClouds * 0.4;
+      clouds = clamp(clouds, 0.0, 1.0);
+      clouds *= scrollEdge;
+
+      /* Brighter at cloud edges, softer core */
+      vec3 color = mix(vec3(0.55, 0.6, 0.72), vec3(0.82, 0.86, 0.94), clouds);
+
+      float alpha = clouds * uCloudOpacity;
+      gl_FragColor = vec4(color, alpha);
+    }
+  `;
+
+  /* ── Compile shaders ── */
+  function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, VERT_SRC));
+  gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, FRAG_SRC));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  /* ── Fullscreen quad ── */
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  /* ── Uniform locations ── */
+  const uTime = gl.getUniformLocation(prog, 'uTime');
+  const uCloudOpacity = gl.getUniformLocation(prog, 'uCloudOpacity');
+  const uIsMobile = gl.getUniformLocation(prog, 'uIsMobile');
+  const uScrollReveal = gl.getUniformLocation(prog, 'uScrollReveal');
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  /* ── Canvas sizing ── */
+  let isMobile = window.innerWidth < FOG_CONFIG.MOBILE_BP;
+
+  function resizeFogCanvas() {
+    isMobile = window.innerWidth < FOG_CONFIG.MOBILE_BP;
+    const scale = isMobile ? 0.5 : FOG_CONFIG.DPR_SCALE;
+    const dpr = Math.min(devicePixelRatio, FOG_CONFIG.DPR_CAP);
+    const w = window.innerWidth * dpr * scale;
+    const h = window.innerHeight * dpr * scale;
+    fogCanvas.width = w;
+    fogCanvas.height = h;
+    gl.viewport(0, 0, w, h);
+  }
+  resizeFogCanvas();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resizeFogCanvas, 100);
+  });
+
+  /* ── Scroll-reactive cloud state ── */
+  let cloudOpacity = 0;
+  let lastScrollY = window.scrollY;
+  let lastScrollTime = 0;
+  let lastFrameTime = 0;
+  let fogDisabled = false;
+  let frameCount = 0;
+  let fpsSum = 0;
+
+  const FADE_IN_SPEED = 1 / 400;    // reach 1.0 in ~400ms
+  const FADE_OUT_SPEED = 1 / 2000;  // reach 0.0 in ~2000ms
+  const SCROLL_IDLE_MS = 800;       // ms before clouds start fading
+
+  /* ── Visibility ── */
+  let fogVisible = true;
+  document.addEventListener('visibilitychange', () => {
+    fogVisible = !document.hidden;
+    if (fogVisible) lastFrameTime = performance.now();
+  });
+
+  /* ── Render loop ── */
+  function cloudFrame(now) {
+    if (fogDisabled) return;
+    if (!fogVisible) { requestAnimationFrame(cloudFrame); return; }
+
+    const dt = lastFrameTime ? now - lastFrameTime : 16;
+    lastFrameTime = now;
+
+    /* FPS check for first N frames */
+    if (frameCount < FOG_CONFIG.FPS_SAMPLE_FRAMES) {
+      if (dt > 0) fpsSum += 1000 / dt;
+      frameCount++;
+      if (frameCount === FOG_CONFIG.FPS_SAMPLE_FRAMES) {
+        const avgFps = fpsSum / FOG_CONFIG.FPS_SAMPLE_FRAMES;
+        if (avgFps < FOG_CONFIG.FPS_THRESHOLD) {
+          fogCanvas.style.display = 'none';
+          fogDisabled = true;
+          return;
+        }
+      }
+    }
+
+    /* Detect scrolling */
+    const curScrollY = window.scrollY;
+    if (curScrollY !== lastScrollY) {
+      lastScrollY = curScrollY;
+      lastScrollTime = now;
+    }
+
+    const scrollIdle = now - lastScrollTime;
+    const isScrolling = scrollIdle < SCROLL_IDLE_MS;
+
+    /* Fade clouds in/out based on scroll state */
+    if (isScrolling) {
+      cloudOpacity = Math.min(1, cloudOpacity + dt * FADE_IN_SPEED);
+    } else {
+      cloudOpacity = Math.max(0, cloudOpacity - dt * FADE_OUT_SPEED);
+    }
+
+    /* Scroll position for the scroll-edge in the shader */
+    const docH = document.documentElement.scrollHeight;
+    const scrollFrac = (curScrollY + window.innerHeight) / docH;
+
+    /* Upload uniforms & draw */
+    gl.uniform1f(uTime, now * 0.001);
+    gl.uniform1f(uCloudOpacity, cloudOpacity);
+    gl.uniform1f(uIsMobile, isMobile ? 1.0 : 0.0);
+    gl.uniform1f(uScrollReveal, scrollFrac);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(cloudFrame);
+  }
+
+  requestAnimationFrame(cloudFrame);
+}
+
+/* ── Video player controls ── */
+const mutedSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+const unmutedSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>';
+let currentVideo = null;
+
+document.querySelectorAll('.video-overlay').forEach(overlay => {
+  const wrapper = overlay.parentElement;
+  const video = wrapper.querySelector('video');
+  const playBtn = overlay.querySelector('.vid-play');
+  const muteBtn = overlay.querySelector('.vid-mute');
+
+  function stopOthers() {
+    document.querySelectorAll('video').forEach(v => {
+      if (v !== video && !v.paused) {
+        v.pause();
+        v.parentElement.querySelector('.video-overlay').classList.remove('hidden');
+        const pb = v.parentElement.querySelector('.vid-play');
+        pb.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+      }
+    });
+  }
+
+  playBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (video.paused) {
+      stopOthers();
+      video.muted = false;
+      muteBtn.innerHTML = unmutedSvg;
+      muteBtn.title = 'Mute';
+      video.play();
+      currentVideo = video;
+      overlay.classList.add('hidden');
+      playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
+    } else {
+      video.pause();
+      currentVideo = null;
+      overlay.classList.remove('hidden');
+      playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+    }
+  });
+
+  wrapper.addEventListener('click', e => {
+    if (e.target.closest('.vid-mute') || e.target.closest('.vid-play')) return;
+    if (!video.paused) {
+      video.pause();
+      currentVideo = null;
+      overlay.classList.remove('hidden');
+      playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+    }
+  });
+
+  muteBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    video.muted = !video.muted;
+    muteBtn.innerHTML = video.muted ? mutedSvg : unmutedSvg;
+    muteBtn.title = video.muted ? 'Unmute' : 'Mute';
+  });
+
+  video.addEventListener('ended', () => {
+    currentVideo = null;
+    overlay.classList.remove('hidden');
+    playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+  });
+});
+
+/* ── Scroll handling ── */
+function onScroll() {
+  const sy = scrollY;
+  const dh = document.body.scrollHeight - innerHeight;
+
+  // Header
+  document.getElementById('header').classList.toggle('scrolled', sy > 50);
+
+  // Scroll progress bar
+  document.getElementById('scroll-fill').style.height = (dh > 0 ? sy / dh * 100 : 0) + '%';
+
+  // Active dot
+  const secs = ['hero','about','services','testimonials'];
+  let active = 0;
+  for (let i = secs.length - 1; i >= 0; i--) {
+    const el = document.getElementById(secs[i]);
+    if (el && sy >= el.offsetTop - 300) { active = i; break; }
+  }
+  document.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('active', i === active));
+}
+addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* ── Scroll reveal (IntersectionObserver) ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+/* ── Counter animation ── */
+const counterObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = parseInt(el.dataset.target);
+    const dur = 2000;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const v = Math.floor(target * ease);
+      el.textContent = (target >= 1000 ? v.toLocaleString() : v) + '+';
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    counterObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-number').forEach(el => counterObs.observe(el));
+
+/* ── Testimonials (dynamic) ── */
+const testimonials = [
+  {q:"I was very pleased with Maria's work. She turned around my 3 YouTube videos very quickly and did an excellent job. I will definitely hire her again!",n:"Rebecca M.",c:""},
+  {q:"Marie is one of the very few amazing freelancers out there. Communication with Mariam is easy and she demonstrates a high level of professionalism. Highly recommend.",n:"David J.",c:"BestStockStrategy"},
+  {q:"Awesome job, insanely fast turnaround. Didn't require any edits, it was executed correctly the first time. Will absolutely hire again.",n:"Ashley T.",c:""},
+  {q:"She is an outstanding professional with excellent communication skills and remarkable efficiency. I highly recommend her for any project!",n:"Sofia S.",c:""},
+  {q:"Always on time and always responding to all requests, quickly understanding what I want without explaining too much. I recommend.",n:"Vantu S.",c:""},
+  {q:"Very responsible and creative freelancer. Pleasure to work and communicate with this kind professional. Definitely will rehire again.",n:"Ruslan A.",c:"HotPixels"},
+  {q:"Good work. The communication was very fast, professional and friendly. Mariam thinks ahead. I liked and appreciated this.",n:"Marcel B.",c:"let's lead"},
+  {q:"Mariam was a pleasure to work with, and very communicative. Asked the right questions to accomplish the assignment quickly and efficiently.",n:"George P.",c:"GPS Global Partners"},
+];
+const grid = document.getElementById('testimonials-grid');
+testimonials.forEach((t, i) => {
+  const div = document.createElement('div');
+  div.className = 'testimonial reveal';
+  div.style.transitionDelay = (i % 2) * 0.15 + 's';
+  div.innerHTML = `
+    <div class="testimonial-header">
+      <div class="testimonial-num"><span>${i+1}</span></div>
+      <div class="testimonial-line"></div>
+    </div>
+    <q>${t.q}</q>
+    <div class="testimonial-author">
+      <div class="testimonial-dash"></div>
+      <div>
+        <p class="testimonial-name">${t.n}</p>
+        ${t.c ? `<p class="testimonial-company">${t.c}</p>` : ''}
+      </div>
+    </div>`;
+  grid.appendChild(div);
+  obs.observe(div);
+});
+
+/* ── Mobile menu ── */
+document.getElementById('menu-btn').addEventListener('click', () => {
+  document.getElementById('nav').classList.toggle('open');
+});
+document.querySelectorAll('#nav a').forEach(a => a.addEventListener('click', () => {
+  document.getElementById('nav').classList.remove('open');
+}));
+
+/* ── Scroll dots & top button ── */
+document.querySelectorAll('.scroll-dot').forEach(d => {
+  d.addEventListener('click', () => {
+    document.getElementById(d.dataset.target)?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+document.getElementById('scroll-top').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>
