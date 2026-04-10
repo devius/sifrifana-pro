@@ -103,22 +103,9 @@ import { initSoftwareCubes } from './three-software.js';
     /* ── Scroll handling ── */
     function onScroll() {
       const sy = scrollY;
-      const dh = document.body.scrollHeight - innerHeight;
 
       // Header
       document.getElementById('header').classList.toggle('scrolled', sy > 50);
-
-      // Scroll progress bar
-      document.getElementById('scroll-fill').style.height = (dh > 0 ? sy / dh * 100 : 0) + '%';
-
-      // Active dot
-      const secs = ['hero', 'about', 'videos', 'testimonials'];
-      let active = 0;
-      for (let i = secs.length - 1; i >= 0; i--) {
-        const el = document.getElementById(secs[i]);
-        if (el && sy >= el.offsetTop - 300) { active = i; break; }
-      }
-      document.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('active', i === active));
     }
     addEventListener('scroll', onScroll, { passive: true });
     onScroll();
@@ -182,13 +169,6 @@ import { initSoftwareCubes } from './three-software.js';
       document.getElementById('nav').classList.remove('open');
     }));
 
-    /* ── Scroll dots & top button ── */
-    document.querySelectorAll('.scroll-dot').forEach(d => {
-      d.addEventListener('click', () => {
-        document.getElementById(d.dataset.target)?.scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-    document.getElementById('scroll-top').addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
 initBackground();
 initSoftwareCubes();
