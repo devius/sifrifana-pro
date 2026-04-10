@@ -13,6 +13,34 @@ import { initSoftwareCubes } from './three-software.js';
       playBtn.setAttribute('aria-label', 'Play video');
       muteBtn.setAttribute('aria-label', 'Unmute video');
 
+      // Progress bar
+      const progress = document.createElement('div');
+      progress.className = 'vid-progress';
+      const progressFill = document.createElement('div');
+      progressFill.className = 'vid-progress-fill';
+      progress.appendChild(progressFill);
+      wrapper.appendChild(progress);
+
+      video.addEventListener('timeupdate', () => {
+        if (video.duration) {
+          progressFill.style.width = (video.currentTime / video.duration * 100) + '%';
+        }
+      });
+
+      let seeking = false;
+      function seek(e) {
+        const rect = progress.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        if (video.duration) video.currentTime = ratio * video.duration;
+      }
+      progress.addEventListener('mousedown', e => { e.stopPropagation(); seeking = true; seek(e); });
+      progress.addEventListener('touchstart', e => { e.stopPropagation(); seeking = true; seek(e.touches[0]); }, { passive: true });
+      progress.addEventListener('click', e => { e.stopPropagation(); });
+      window.addEventListener('mousemove', e => { if (seeking) seek(e); });
+      window.addEventListener('touchmove', e => { if (seeking) seek(e.touches[0]); }, { passive: true });
+      window.addEventListener('mouseup', () => { seeking = false; });
+      window.addEventListener('touchend', () => { seeking = false; });
+
       function stopOthers() {
         document.querySelectorAll('video').forEach(v => {
           if (v !== video && !v.paused) {
@@ -46,7 +74,7 @@ import { initSoftwareCubes } from './three-software.js';
       });
 
       wrapper.addEventListener('click', e => {
-        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play')) return;
+        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress')) return;
         if (!video.paused) {
           video.pause();
           currentVideo = null;
