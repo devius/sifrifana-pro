@@ -406,6 +406,61 @@
       .hero-links {
         justify-content: center;
       }
+
+      .hero-badge {
+        align-items: center;
+      }
+    }
+
+    .hero-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 26px auto 0;
+      max-width: 460px;
+      text-align: center;
+    }
+
+    .hero-badge-link {
+      display: inline-flex;
+      border-radius: 999px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      max-width: 100%;
+    }
+
+    .hero-badge-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(20, 168, 0, 0.25);
+    }
+
+    .hero-badge-link img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .hero-badge-note {
+      margin-top: 12px;
+      font-family: var(--heading);
+      font-size: 0.64rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .hero-badge-link img {
+        width: min(100%, 320px);
+      }
+
+      .hero-badge-note {
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+      }
     }
 
     /* ── Videos ── */
@@ -1170,6 +1225,10 @@
       margin-bottom: 24px;
     }
 
+    .footer-linkedin-top {
+      margin-bottom: 16px;
+    }
+
     .footer-links {
       display: flex;
       justify-content: center;
@@ -1188,9 +1247,6 @@
       color: #6fda44;
     }
 
-    .footer-linkedin {
-      color: #0077b5;
-    }
 
     .footer-social {
       display: flex;
@@ -1273,6 +1329,8 @@
         flex-direction: column;
         gap: 16px;
       }
+
+
     }
 
     /* ── Scroll progress (right side) ── */
