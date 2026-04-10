@@ -10,6 +10,8 @@ import { initSoftwareCubes } from './three-software.js';
       const video = wrapper.querySelector('video');
       const playBtn = overlay.querySelector('.vid-play');
       const muteBtn = overlay.querySelector('.vid-mute');
+      playBtn.setAttribute('aria-label', 'Play video');
+      muteBtn.setAttribute('aria-label', 'Unmute video');
 
       function stopOthers() {
         document.querySelectorAll('video').forEach(v => {
@@ -33,11 +35,13 @@ import { initSoftwareCubes } from './three-software.js';
           currentVideo = video;
           overlay.classList.add('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
+          playBtn.setAttribute('aria-label', 'Pause video');
         } else {
           video.pause();
           currentVideo = null;
           overlay.classList.remove('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+          playBtn.setAttribute('aria-label', 'Play video');
         }
       });
 
@@ -48,6 +52,7 @@ import { initSoftwareCubes } from './three-software.js';
           currentVideo = null;
           overlay.classList.remove('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+          playBtn.setAttribute('aria-label', 'Play video');
         }
       });
 
@@ -56,12 +61,14 @@ import { initSoftwareCubes } from './three-software.js';
         video.muted = !video.muted;
         muteBtn.innerHTML = video.muted ? mutedSvg : unmutedSvg;
         muteBtn.title = video.muted ? 'Unmute' : 'Mute';
+        muteBtn.setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
       });
 
       video.addEventListener('ended', () => {
         currentVideo = null;
         overlay.classList.remove('hidden');
         playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+        playBtn.setAttribute('aria-label', 'Play video');
       });
     });
 
@@ -77,7 +84,7 @@ import { initSoftwareCubes } from './three-software.js';
       document.getElementById('scroll-fill').style.height = (dh > 0 ? sy / dh * 100 : 0) + '%';
 
       // Active dot
-      const secs = ['hero', 'about', 'services', 'testimonials'];
+      const secs = ['hero', 'about', 'videos', 'testimonials'];
       let active = 0;
       for (let i = secs.length - 1; i >= 0; i--) {
         const el = document.getElementById(secs[i]);
