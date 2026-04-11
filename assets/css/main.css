@@ -673,12 +673,13 @@
       background: #000 !important;
       aspect-ratio: unset !important;
       overflow: hidden !important;
+      box-shadow: none !important;
     }
 
     .video-fullscreen-active video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
     }
 
     .video-fullscreen-active .vid-fullscreen {
