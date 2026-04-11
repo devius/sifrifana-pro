@@ -1102,6 +1102,8 @@
 
     .testimonial {
       position: relative;
+      border-left: 2px solid var(--accent, rgba(255, 255, 255, 0.1));
+      padding-left: 24px;
     }
 
     .testimonial-header {
@@ -1114,7 +1116,7 @@
     .testimonial-num {
       width: 32px;
       height: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--accent, rgba(255, 255, 255, 0.2));
       transform: rotate(45deg);
       display: flex;
       align-items: center;
@@ -1124,7 +1126,7 @@
 
     .testimonial-num span {
       transform: rotate(-45deg);
-      color: rgba(255, 255, 255, 0.5);
+      color: var(--accent, rgba(255, 255, 255, 0.5));
       font-size: 0.7rem;
     }
 

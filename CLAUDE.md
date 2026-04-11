@@ -10,6 +10,15 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 - Use Playwright (`node` + `require('playwright')`) to scrape external website content (e.g. sifrifana.pro) — WebFetch returns 403 for this domain
 - Google Fonts loaded via CDN: Josefin Sans (weights 300, 400, 600)
 
+## Hosting & deployment
+
+- **Site**: Cloudflare Pages — project `sifrifana-pro` on account `4dc18a7d9c10a7bda303d781473a8cc2`
+- **Domain**: `sifrifana.pro` (DNS on Cloudflare, custom domain on Pages), also available at `sifrifana-pro.pages.dev`
+- **Videos**: Cloudflare R2 bucket `sifrifana-videos` — public access via `https://pub-6890b9cbc87c49a184b78dd8d6cd46cb.r2.dev/videos/`
+- **CI/CD**: GitHub Actions (`.github/workflows/static.yml`) — auto-deploys to Cloudflare Pages on push to `main` using `cloudflare/wrangler-action@v3`
+- **Secrets** (GitHub repo settings): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+- Videos are NOT in the git repo (gitignored) — they live only on R2. To add/replace a video: download via yt-dlp, upload to R2 with `wrangler r2 object put sifrifana-videos/videos/<id>.mp4 --file <path> --content-type video/mp4 --remote`, update the URL in `index.html`
+
 ## File structure
 
 ```
@@ -24,10 +33,12 @@ assets/
   img/
     sifrifana.png                   # Hero portrait photo (used 3 times for chromatic aberration effect)
     software/                       # Software logo textures (premiere.png, capcut.png, photoshop.png, lightroom.png)
-videos/                             # Local MP4 files (gitignored) downloaded via yt-dlp from sifrifana.pro YouTube embeds
+    logos/                          # Platform logos (linkedin.svg, upwork.svg)
+videos/                             # Local MP4 files (gitignored) — canonical copies live on R2
 world.svg                           # World map SVG used in Stats section
+.github/workflows/static.yml        # Cloudflare Pages auto-deploy workflow
 CLAUDE.md                           # This file
-.gitignore                          # Ignores videos/, .claude/, .DS_Store, node_modules/
+.gitignore                          # Ignores videos/, .claude/, .DS_Store, node_modules/, .wrangler/
 ```
 
 ## Design guidelines
@@ -43,28 +54,29 @@ CLAUDE.md                           # This file
 - The hero logo wrap (SVG icon + divider + title) must be kept intact
 - Mobile breakpoint at 768px stacks hero columns vertically; additional breakpoints at 600px and 1024px for grids
 - Custom thin scrollbar styling via `::-webkit-scrollbar`
+- Videos and shorts have a subtle cyan/purple glow border (`box-shadow`)
 
 ## Video player
 
 - Custom controls only: play/pause button + mute/unmute button (no native browser controls)
+- Progress bar at bottom of each video: 10px tall (14px on hover), cyan-to-purple gradient fill, click/drag to seek
 - Only one video can play at a time — starting a new video pauses the current one
 - Videos auto-unmute on play; mute button toggles with speaker icon swap (SVG strings from `config.js`)
 - Overlay with play button shows when paused, hides when playing (mute button stays visible)
-- All videos are local MP4 files in `videos/` directory (downloaded via yt-dlp from sifrifana.pro YouTube embeds)
+- Videos served from Cloudflare R2 (full URLs in `src` attributes)
 - Videos use `preload="metadata"` and start muted
 
 ## Key sections (in DOM order)
 
 1. **Header** — Fixed top nav with logo + navigation links (Home, Client Reviews, Portfolio Videos, Testimonials); becomes translucent with backdrop blur on scroll (`.scrolled` class)
-2. **Scroll Progress** — Fixed right-side indicator: vertical bar fill + dot buttons for section navigation + scroll-to-top button (hidden on screens <= 1024px)
-3. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, UpWork/LinkedIn CTA buttons, scroll hint
-4. **Clients Talk About Me** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid
-5. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
-6. **Shorts** — 3 vertical (9:16) short-form videos in a flex row
-7. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
-8. **Stats** (`#stats`) — Animated counter stats (30+ Clients, 160+ Projects, 3,081+ Videos) with world map SVG background and decorative dots
-9. **Testimonials** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid
-10. **Footer** — 3-column grid with nav links, CTA + contact, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
+2. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, Upwork/LinkedIn styled buttons (`.btn-badge` with local SVG logos), scroll hint
+3. **Clients Talk About Me** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid
+4. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
+5. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
+6. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
+7. **Stats** (`#stats`) — Animated counter stats (30+ Clients, 160+ Projects, 3,081+ Videos) with world map SVG background and decorative dots
+8. **Testimonials** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid
+9. **Footer** — 3-column grid with nav links, CTA + Upwork/LinkedIn buttons (stacked, LinkedIn first) + badge note, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
 
 ## JavaScript architecture (modular ES modules)
 
@@ -77,11 +89,10 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - Event delegation via `querySelectorAll('.video-overlay')` — handles play/pause, mute, and click-to-pause
 - `stopOthers()` pauses all other videos when a new one starts
 - SVG icons swapped via `innerHTML` using exported strings from `config.js`
+- Progress bar dynamically created per video: `timeupdate` updates fill, mousedown/touchstart enables seeking
 
 ### Scroll handling
 - Header scroll state toggle (`.scrolled` class at 50px)
-- Scroll progress bar fill percentage
-- Active section dot detection (loops through `['hero','about','videos','testimonials']`)
 
 ### Scroll reveal
 - `IntersectionObserver` at 15% threshold adds `.visible` class to `.reveal` elements; removes on exit
@@ -127,6 +138,7 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - Scripts in external `assets/js/` modules — no inline JS
 - SVG icons are inline in HTML throughout (no icon library)
 - Section IDs don't always match their visual names (e.g., `#about` is the "Clients Talk About Me" section)
-- Videos are referenced by YouTube ID filenames (e.g., `videos/wla3GQNoP5Y.mp4`)
-- The `videos/` directory is gitignored — video files must be downloaded separately via yt-dlp
+- Videos are referenced by full R2 URLs (e.g., `https://pub-6890b9cbc87c49a184b78dd8d6cd46cb.r2.dev/videos/wla3GQNoP5Y.mp4`)
+- The `videos/` directory is gitignored — canonical copies live on R2
 - Three.js is loaded as a global via CDN `<script>` tag before the module scripts
+- Platform buttons use `.btn-badge` class with `.btn-upwork` / `.btn-linkedin` variants and local SVG logos in `assets/img/logos/`

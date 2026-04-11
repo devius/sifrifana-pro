@@ -144,6 +144,8 @@ import { initSoftwareCubes } from './three-software.js';
       const div = document.createElement('div');
       div.className = 'testimonial reveal';
       div.style.transitionDelay = (i % 2) * 0.15 + 's';
+      const hue = 190 + (i / (testimonials.length - 1)) * 140;
+      div.style.setProperty('--accent', `hsl(${hue}, 100%, 65%)`);
       div.innerHTML = `
     <div class="testimonial-header">
       <div class="testimonial-num"><span>${i + 1}</span></div>
