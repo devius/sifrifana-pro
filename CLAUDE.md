@@ -93,6 +93,7 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - `syncBackground()` pauses the WebGL background animation while any video is playing, resumes when all videos are paused/ended (calls `pauseBackground()` / `resumeBackground()` from `three-bg.js`)
 - SVG icons swapped via `innerHTML` using exported strings from `config.js`
 - Progress bar dynamically created per video: `timeupdate` updates fill, mousedown/touchstart enables seeking
+- `IntersectionObserver` (threshold 0) auto-pauses any playing video when it exits the viewport — shows overlay, resets play button, and calls `syncBackground()`
 
 ### Scroll handling
 - Header scroll state toggle (`.scrolled` class at 50px)

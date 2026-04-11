@@ -109,6 +109,27 @@ import { initSoftwareCubes } from './three-software.js';
       });
     });
 
+    /* ── Auto-pause videos when scrolled out of viewport ── */
+    const videoObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) return;
+        const wrapper = e.target.closest('.video-wrapper') || e.target.parentElement;
+        const video = e.target;
+        if (video.paused) return;
+        video.pause();
+        currentVideo = null;
+        syncBackground();
+        const overlay = wrapper.querySelector('.video-overlay');
+        const playBtn = wrapper.querySelector('.vid-play');
+        if (overlay) overlay.classList.remove('hidden');
+        if (playBtn) {
+          playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+          playBtn.setAttribute('aria-label', 'Play video');
+        }
+      });
+    }, { threshold: 0 });
+    document.querySelectorAll('video').forEach(v => videoObs.observe(v));
+
     /* ── Scroll handling ── */
     function onScroll() {
       const sy = scrollY;

@@ -819,6 +819,7 @@
       letter-spacing: 0.1em;
       color: rgba(255, 255, 255, 0.8);
       text-align: center;
+      width: 100%;
     }
 
     .software-box-three {
@@ -826,6 +827,9 @@
       height: 160px;
       position: relative;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .software-box-three canvas {
