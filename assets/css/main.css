@@ -4,6 +4,12 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a:active,
+    button:active {
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
     }
 
     :root {
@@ -186,9 +192,9 @@
       }
 
       .nav.open a {
-        font-size: 1.4rem;
+        font-size: 1rem;
         letter-spacing: 0.2em;
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.55);
       }
 
       body.menu-open {
@@ -197,8 +203,9 @@
     }
 
     /* ── Sections shared ── */
-    section {
+    section, footer {
       position: relative;
+      scroll-margin-top: 80px;
     }
 
     .container {
@@ -524,7 +531,7 @@
 
     /* ── Videos ── */
     .videos {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
@@ -668,7 +675,7 @@
 
     /* ── Client Videos ── */
     .client-videos {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
@@ -715,7 +722,7 @@
 
     /* ── Shorts ── */
     .shorts {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
@@ -773,7 +780,7 @@
 
     /* ── Premium Editing Software ── */
     .software {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
@@ -911,7 +918,7 @@
 
     /* ── Services ── */
     .services-intro {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
@@ -1025,7 +1032,7 @@
 
     /* ── Stats ── */
     .stats {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 2;
       /* background removed — fog reveals over flat body bg */
@@ -1127,7 +1134,7 @@
 
     /* ── Testimonials ── */
     .testimonials {
-      padding: clamp(80px, 10vw, 160px) 0;
+      padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 2;
       /* background removed — fog reveals over flat body bg */
@@ -1246,7 +1253,7 @@
 
     /* ── Footer ── */
     .footer {
-      padding: clamp(80px, 10vw, 160px) 0 48px;
+      padding: clamp(60px, 8vw, 120px) 0 48px;
       position: relative;
       z-index: 2;
     }
