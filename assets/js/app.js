@@ -1,14 +1,99 @@
-import { mutedSvg, unmutedSvg, testimonials } from './config.js';
+import { mutedSvg, unmutedSvg, fullscreenSvg, exitFullscreenSvg, testimonials } from './config.js';
 import { initBackground, pauseBackground, resumeBackground } from './three-bg.js';
 import { initSoftwareCubes } from './three-software.js';
 
     /* ── Video player controls ── */
             let currentVideo = null;
+            let fullscreenWrapper = null;
 
     function syncBackground() {
       const anyPlaying = Array.from(document.querySelectorAll('video')).some(v => !v.paused);
-      if (anyPlaying) pauseBackground(); else resumeBackground();
+      if (anyPlaying || fullscreenWrapper) pauseBackground(); else resumeBackground();
     }
+
+    let fullscreenPlaceholder = null;
+
+    function exitFullscreen(wrapper, andPause) {
+      if (!wrapper) return;
+      const video = wrapper.querySelector('video');
+      const fsBtn = wrapper.querySelector('.vid-fullscreen');
+      wrapper.classList.remove('video-fullscreen-active');
+      document.body.style.overflow = '';
+      if (fsBtn) fsBtn.innerHTML = fullscreenSvg;
+      // Restore wrapper to its original DOM position
+      if (fullscreenPlaceholder && fullscreenPlaceholder.parentElement) {
+        fullscreenPlaceholder.parentElement.replaceChild(wrapper, fullscreenPlaceholder);
+        fullscreenPlaceholder = null;
+      }
+      fullscreenWrapper = null;
+      if (andPause && video && !video.paused) {
+        video.pause();
+        currentVideo = null;
+        const overlay = wrapper.querySelector('.video-overlay');
+        const playBtn = wrapper.querySelector('.vid-play');
+        if (overlay) overlay.classList.remove('hidden');
+        if (playBtn) {
+          playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+          playBtn.setAttribute('aria-label', 'Play video');
+        }
+      }
+      syncBackground();
+    }
+
+    function enterFullscreen(wrapper) {
+      if (fullscreenWrapper && fullscreenWrapper !== wrapper) {
+        exitFullscreen(fullscreenWrapper, true);
+      }
+      const fsBtn = wrapper.querySelector('.vid-fullscreen');
+      // Move wrapper to body so position:fixed escapes transform containing blocks
+      fullscreenPlaceholder = document.createComment('fullscreen-placeholder');
+      wrapper.parentElement.replaceChild(fullscreenPlaceholder, wrapper);
+      document.body.appendChild(wrapper);
+      wrapper.classList.add('video-fullscreen-active');
+      document.body.style.overflow = 'hidden';
+      if (fsBtn) fsBtn.innerHTML = exitFullscreenSvg;
+      fullscreenWrapper = wrapper;
+      syncBackground();
+    }
+
+    // ESC key exits fullscreen and pauses
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && fullscreenWrapper) {
+        exitFullscreen(fullscreenWrapper, true);
+      }
+    });
+
+    // Scroll (wheel) exits fullscreen and pauses — accumulate delta with decay
+    let wheelAccum = 0;
+    let wheelTimer = null;
+    document.addEventListener('wheel', e => {
+      if (!fullscreenWrapper) return;
+      e.preventDefault();
+      wheelAccum += Math.abs(e.deltaY);
+      if (wheelAccum > 150) {
+        wheelAccum = 0;
+        clearTimeout(wheelTimer);
+        exitFullscreen(fullscreenWrapper, true);
+        return;
+      }
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => { wheelAccum = 0; }, 400);
+    }, { passive: false });
+
+    // Swipe up/down exits fullscreen and pauses
+    let touchStartY = null;
+    document.addEventListener('touchstart', e => {
+      if (fullscreenWrapper) touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+      if (fullscreenWrapper && touchStartY !== null) {
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dy > 80) {
+          touchStartY = null;
+          exitFullscreen(fullscreenWrapper, true);
+        }
+      }
+    }, { passive: true });
 
     document.querySelectorAll('.video-overlay').forEach(overlay => {
       const wrapper = overlay.parentElement;
@@ -25,6 +110,23 @@ import { initSoftwareCubes } from './three-software.js';
       progressFill.className = 'vid-progress-fill';
       progress.appendChild(progressFill);
       wrapper.appendChild(progress);
+
+      // Fullscreen button
+      const fsBtn = document.createElement('button');
+      fsBtn.className = 'vid-fullscreen';
+      fsBtn.title = 'Fullscreen';
+      fsBtn.setAttribute('aria-label', 'Enter fullscreen');
+      fsBtn.innerHTML = fullscreenSvg;
+      overlay.appendChild(fsBtn);
+
+      fsBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (wrapper.classList.contains('video-fullscreen-active')) {
+          exitFullscreen(wrapper, false);
+        } else {
+          enterFullscreen(wrapper);
+        }
+      });
 
       video.addEventListener('timeupdate', () => {
         if (video.duration) {
@@ -49,10 +151,15 @@ import { initSoftwareCubes } from './three-software.js';
       function stopOthers() {
         document.querySelectorAll('video').forEach(v => {
           if (v !== video && !v.paused) {
-            v.pause();
-            v.parentElement.querySelector('.video-overlay').classList.remove('hidden');
-            const pb = v.parentElement.querySelector('.vid-play');
-            pb.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+            const w = v.parentElement;
+            if (w.classList.contains('video-fullscreen-active')) {
+              exitFullscreen(w, true);
+            } else {
+              v.pause();
+              w.querySelector('.video-overlay').classList.remove('hidden');
+              const pb = w.querySelector('.vid-play');
+              pb.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+            }
           }
         });
       }
@@ -71,17 +178,21 @@ import { initSoftwareCubes } from './three-software.js';
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
           playBtn.setAttribute('aria-label', 'Pause video');
         } else {
-          video.pause();
-          currentVideo = null;
-          syncBackground();
-          overlay.classList.remove('hidden');
-          playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
-          playBtn.setAttribute('aria-label', 'Play video');
+          if (wrapper.classList.contains('video-fullscreen-active')) {
+            exitFullscreen(wrapper, true);
+          } else {
+            video.pause();
+            currentVideo = null;
+            syncBackground();
+            overlay.classList.remove('hidden');
+            playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+            playBtn.setAttribute('aria-label', 'Play video');
+          }
         }
       });
 
       wrapper.addEventListener('click', e => {
-        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress')) return;
+        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress') || e.target.closest('.vid-fullscreen')) return;
         if (!video.paused) {
           video.pause();
           currentVideo = null;
@@ -101,6 +212,9 @@ import { initSoftwareCubes } from './three-software.js';
       });
 
       video.addEventListener('ended', () => {
+        if (wrapper.classList.contains('video-fullscreen-active')) {
+          exitFullscreen(wrapper, false);
+        }
         currentVideo = null;
         syncBackground();
         overlay.classList.remove('hidden');
@@ -116,6 +230,7 @@ import { initSoftwareCubes } from './three-software.js';
         const wrapper = e.target.closest('.video-wrapper') || e.target.parentElement;
         const video = e.target;
         if (video.paused) return;
+        if (wrapper.classList.contains('video-fullscreen-active')) return;
         video.pause();
         currentVideo = null;
         syncBackground();

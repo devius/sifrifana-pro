@@ -7,6 +7,7 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 - Static site: `index.html` + external CSS (`assets/css/main.css`) + modular JS (`assets/js/`)
 - Three.js (r128) loaded via CDN for WebGL background and 3D software cubes
 - No build tools, frameworks, or package manager
+- Local dev server: `npx http-server /Users/devi/Development/sifrifana-pro -p 8003 -c-1`
 - Use Playwright (`node` + `require('playwright')`) to scrape external website content (e.g. sifrifana.pro) — WebFetch returns 403 for this domain
 - Google Fonts loaded via CDN: Josefin Sans (weights 300, 400, 600)
 
@@ -44,6 +45,7 @@ assets/
     three-bg.js                     # WebGL particle tunnel background (initBackground)
     three-software.js               # 3D interactive software cubes (initSoftwareCubes)
   img/
+    favicon.svg                     # SVG favicon (constellation icon from hero section)
     sifrifana.png                   # Hero portrait photo (used 3 times for chromatic aberration effect)
     software/                       # Software logo textures (premiere.png, capcut.png, photoshop.png, lightroom.png)
     logos/                          # Platform logos (linkedin.svg, upwork.svg)
@@ -74,7 +76,11 @@ CLAUDE.md                           # This file
 
 ## Video player
 
-- Custom controls only: play/pause button + mute/unmute button (no native browser controls)
+- Custom controls only: play/pause button + mute/unmute button + fullscreen button (no native browser controls)
+- Fullscreen button (top-right, `.vid-fullscreen`): toggles CSS-based fullscreen (`.video-fullscreen-active` class on wrapper); icon swaps between expand/compress; always visible while playing (like mute button)
+- Fullscreen uses `position: fixed; inset: 0` with `object-fit: contain` (black bars for aspect ratio mismatch)
+- Exit fullscreen: scroll wheel, swipe up/down (40px threshold), or ESC key — all exit AND pause the video
+- Fullscreen pauses the WebGL background; exiting resumes it (via `syncBackground`)
 - Progress bar at bottom of each video: 10px tall (14px on hover), cyan-to-purple gradient fill, click/drag to seek
 - Only one video can play at a time — starting a new video pauses the current one
 - Videos auto-unmute on play; mute button toggles with speaker icon swap (SVG strings from `config.js`)

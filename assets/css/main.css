@@ -589,7 +589,8 @@
       pointer-events: none;
     }
 
-    .video-overlay.hidden .vid-mute {
+    .video-overlay.hidden .vid-mute,
+    .video-overlay.hidden .vid-fullscreen {
       opacity: 1;
       pointer-events: auto;
     }
@@ -634,6 +635,90 @@
 
     .vid-mute:hover {
       background: rgba(0, 0, 0, 0.7);
+    }
+
+    .vid-fullscreen {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+      z-index: 3;
+    }
+
+    .vid-fullscreen:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    /* Fullscreen state */
+    .video-fullscreen-active {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 10000 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      background: #000 !important;
+      aspect-ratio: unset !important;
+      overflow: hidden !important;
+    }
+
+    .video-fullscreen-active video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-fullscreen-active .vid-fullscreen {
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .video-fullscreen-active .vid-mute {
+      bottom: 28px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .video-fullscreen-active .video-overlay.hidden {
+      opacity: 1;
+      background: transparent;
+      backdrop-filter: none;
+      pointer-events: none;
+    }
+
+    .video-fullscreen-active .video-overlay.hidden .vid-play {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .video-fullscreen-active .video-overlay.hidden .vid-mute,
+    .video-fullscreen-active .video-overlay.hidden .vid-fullscreen {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .video-fullscreen-active .vid-progress {
+      height: 12px;
+    }
+
+    .video-fullscreen-active .vid-progress:hover {
+      height: 16px;
     }
 
     .vid-progress {
