@@ -17,7 +17,7 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 - **Videos**: Cloudflare R2 bucket `sifrifana-videos` — public access via `https://pub-6890b9cbc87c49a184b78dd8d6cd46cb.r2.dev/videos/`
 - **CI/CD**: GitHub Actions (`.github/workflows/static.yml`) — auto-deploys to Cloudflare Pages on push to `main` using `cloudflare/wrangler-action@v3`
 - **Secrets** (GitHub repo settings): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-- Videos are NOT in the git repo (gitignored) — they live only on R2. To add/replace a video: download via yt-dlp, upload to R2 with `wrangler r2 object put sifrifana-videos/videos/<id>.mp4 --file <path> --content-type video/mp4 --remote`, update the URL in `index.html`
+- Videos are NOT in the git repo (gitignored) — they live only on R2. To add/replace a video: download via yt-dlp, upload to R2 with `wrangler r2 object put sifrifana-videos/videos/<id>.mp4 --file <path> --content-type video/mp4 --remote`, download thumbnail from `https://img.youtube.com/vi/<id>/maxresdefault.jpg`, upload to R2 as `thumbs/<id>.jpg`, update both `src` and `poster` in `index.html`
 
 ## File structure
 
@@ -34,6 +34,7 @@ assets/
     sifrifana.png                   # Hero portrait photo (used 3 times for chromatic aberration effect)
     software/                       # Software logo textures (premiere.png, capcut.png, photoshop.png, lightroom.png)
     logos/                          # Platform logos (linkedin.svg, upwork.svg)
+    thumbnails/                     # YouTube video thumbnails (maxresdefault.jpg per video ID)
 videos/                             # Local MP4 files (gitignored) — canonical copies live on R2
 world.svg                           # World map SVG used in Stats section
 .github/workflows/static.yml        # Cloudflare Pages auto-deploy workflow
@@ -64,7 +65,8 @@ CLAUDE.md                           # This file
 - Videos auto-unmute on play; mute button toggles with speaker icon swap (SVG strings from `config.js`)
 - Overlay with play button shows when paused, hides when playing (mute button stays visible)
 - Videos served from Cloudflare R2 (full URLs in `src` attributes)
-- Videos use `preload="metadata"` and start muted
+- YouTube thumbnails used as `poster` images, also hosted on R2 (`/thumbs/{ID}.jpg`)
+- Videos use `preload="none"` and start muted — poster image provides the visual preview
 
 ## Key sections (in DOM order)
 

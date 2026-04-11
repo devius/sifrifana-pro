@@ -164,11 +164,17 @@ import { initSoftwareCubes } from './three-software.js';
     });
 
     /* ── Mobile menu ── */
-    document.getElementById('menu-btn').addEventListener('click', () => {
-      document.getElementById('nav').classList.toggle('open');
+    const menuBtn = document.getElementById('menu-btn');
+    const nav = document.getElementById('nav');
+    menuBtn.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      menuBtn.classList.toggle('open');
+      document.body.classList.toggle('menu-open');
     });
     document.querySelectorAll('#nav a').forEach(a => a.addEventListener('click', () => {
-      document.getElementById('nav').classList.remove('open');
+      nav.classList.remove('open');
+      menuBtn.classList.remove('open');
+      document.body.classList.remove('menu-open');
     }));
 
 
