@@ -150,11 +150,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        position: absolute;
-        top: 80px;
+        justify-content: flex-end;
+        position: fixed;
+        top: 0;
         left: 0;
-        right: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
         background: rgba(0, 0, 0, 1);
+        padding-bottom: 80px;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         z-index: 50;
@@ -165,9 +169,11 @@
         text-align: center;
       }
 
-      .nav.open li {
-        padding: 16px 0;
-      }
+      .nav.open li:nth-child(1) { padding: 12px 0; }
+      .nav.open li:nth-child(2) { padding: 18px 0; }
+      .nav.open li:nth-child(3) { padding: 24px 0; }
+      .nav.open li:nth-child(4) { padding: 18px 0; }
+      .nav.open li:nth-child(5) { padding: 12px 0; }
 
       .nav.open a {
         font-size: 1.4rem;
