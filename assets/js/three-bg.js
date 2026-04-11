@@ -1,3 +1,16 @@
+let _paused = false;
+let _animationId = null;
+
+export function pauseBackground() { _paused = true; }
+export function resumeBackground() {
+  if (_paused) {
+    _paused = false;
+    _animationId = requestAnimationFrame(_animate);
+  }
+}
+
+let _animate; // assigned inside initBackground
+
 export function initBackground() {
       const canvas = document.getElementById('webgl-bg');
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
@@ -117,7 +130,8 @@ export function initBackground() {
 
       const clock = new THREE.Clock();
 
-      function animateBg() {
+      _animate = function animateBg() {
+        if (_paused) return;
         requestAnimationFrame(animateBg);
         const dt = clock.getDelta();
 
@@ -184,7 +198,7 @@ export function initBackground() {
 
         renderer.render(scene, camera);
       }
-      animateBg();
+      _animate();
 
       window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;

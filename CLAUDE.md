@@ -90,6 +90,7 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 ### Video player controls
 - Event delegation via `querySelectorAll('.video-overlay')` — handles play/pause, mute, and click-to-pause
 - `stopOthers()` pauses all other videos when a new one starts
+- `syncBackground()` pauses the WebGL background animation while any video is playing, resumes when all videos are paused/ended (calls `pauseBackground()` / `resumeBackground()` from `three-bg.js`)
 - SVG icons swapped via `innerHTML` using exported strings from `config.js`
 - Progress bar dynamically created per video: `timeupdate` updates fill, mousedown/touchstart enables seeking
 
@@ -119,13 +120,14 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - Exports `mutedSvg`, `unmutedSvg` (SVG markup strings for mute button states)
 - Exports `testimonials` array
 
-### three-bg.js — `initBackground()`
+### three-bg.js — `initBackground()`, `pauseBackground()`, `resumeBackground()`
 - Full-viewport WebGL particle tunnel using Three.js
 - 40 "head" particles each with 45-point fading tails (light-painting effect)
 - Neon color palette: pink (#ff0066), cyan (#00ccff), purple (#9900ff)
 - Mouse parallax on camera rotation
 - Scroll-reactive speed boost (warp effect)
 - Deep navy fog (`FogExp2`)
+- Exports `pauseBackground()` / `resumeBackground()` to stop/restart the animation loop — used by `app.js` to pause the background while any video is playing and resume when all videos are paused/ended
 
 ### three-software.js — `initSoftwareCubes()`
 - 4 independent Three.js scenes (Premiere Pro, CapCut, Photoshop, Lightroom)

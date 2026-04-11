@@ -1,9 +1,14 @@
 import { mutedSvg, unmutedSvg, testimonials } from './config.js';
-import { initBackground } from './three-bg.js';
+import { initBackground, pauseBackground, resumeBackground } from './three-bg.js';
 import { initSoftwareCubes } from './three-software.js';
 
     /* ── Video player controls ── */
             let currentVideo = null;
+
+    function syncBackground() {
+      const anyPlaying = Array.from(document.querySelectorAll('video')).some(v => !v.paused);
+      if (anyPlaying) pauseBackground(); else resumeBackground();
+    }
 
     document.querySelectorAll('.video-overlay').forEach(overlay => {
       const wrapper = overlay.parentElement;
@@ -61,12 +66,14 @@ import { initSoftwareCubes } from './three-software.js';
           muteBtn.title = 'Mute';
           video.play();
           currentVideo = video;
+          syncBackground();
           overlay.classList.add('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
           playBtn.setAttribute('aria-label', 'Pause video');
         } else {
           video.pause();
           currentVideo = null;
+          syncBackground();
           overlay.classList.remove('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
           playBtn.setAttribute('aria-label', 'Play video');
@@ -78,6 +85,7 @@ import { initSoftwareCubes } from './three-software.js';
         if (!video.paused) {
           video.pause();
           currentVideo = null;
+          syncBackground();
           overlay.classList.remove('hidden');
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
           playBtn.setAttribute('aria-label', 'Play video');
@@ -94,6 +102,7 @@ import { initSoftwareCubes } from './three-software.js';
 
       video.addEventListener('ended', () => {
         currentVideo = null;
+        syncBackground();
         overlay.classList.remove('hidden');
         playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
         playBtn.setAttribute('aria-label', 'Play video');
