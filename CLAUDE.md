@@ -17,7 +17,20 @@ Single-page portfolio site for Mariam Dikhaminjia (Sifrifana) — video editing 
 - **Videos**: Cloudflare R2 bucket `sifrifana-videos` — public access via `https://pub-6890b9cbc87c49a184b78dd8d6cd46cb.r2.dev/videos/`
 - **CI/CD**: GitHub Actions (`.github/workflows/static.yml`) — auto-deploys to Cloudflare Pages on push to `main` using `cloudflare/wrangler-action@v3`
 - **Secrets** (GitHub repo settings): `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-- Videos are NOT in the git repo (gitignored) — they live only on R2. To add/replace a video: download via yt-dlp, upload to R2 with `wrangler r2 object put sifrifana-videos/videos/<id>.mp4 --file <path> --content-type video/mp4 --remote`, download thumbnail from `https://img.youtube.com/vi/<id>/maxresdefault.jpg`, upload to R2 as `thumbs/<id>.jpg`, update both `src` and `poster` in `index.html`
+
+### Two-step deployment process
+
+Deploying content changes is a two-step process because videos are hosted separately from the site:
+
+1. **Upload video assets to R2** (manual, before pushing code):
+   ```bash
+   ./scripts/upload-video.sh <youtube-url-or-id>
+   ```
+   This downloads the video + thumbnail via yt-dlp, uploads both to R2, and prints the `src`/`poster` URLs to use in `index.html`. Prerequisites: `yt-dlp`, `wrangler` (authenticated), `curl`.
+
+2. **Push code to deploy the site**: Update `index.html` with the R2 URLs, commit, and push to `main`. GitHub Actions auto-deploys to Cloudflare Pages.
+
+Videos are NOT in the git repo (`videos/` is gitignored) — they live only on R2. The local `videos/` directory is a workspace for downloading/processing before upload.
 
 ## File structure
 
@@ -35,6 +48,8 @@ assets/
     software/                       # Software logo textures (premiere.png, capcut.png, photoshop.png, lightroom.png)
     logos/                          # Platform logos (linkedin.svg, upwork.svg)
     thumbnails/                     # YouTube video thumbnails (maxresdefault.jpg per video ID)
+scripts/
+  upload-video.sh                   # Downloads YouTube video + thumb, uploads to R2, prints URLs
 videos/                             # Local MP4 files (gitignored) — canonical copies live on R2
 world.svg                           # World map SVG used in Stats section
 .github/workflows/static.yml        # Cloudflare Pages auto-deploy workflow
@@ -100,7 +115,8 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 
 ### Scroll reveal
 - `IntersectionObserver` at 15% threshold adds `.visible` class to `.reveal` elements; removes on exit
-- Staggered delays via `.reveal-delay-1`, `.reveal-delay-2`, `.reveal-delay-3`
+- Staggered delays via `.reveal-delay-1` (0.3s), `.reveal-delay-2` (0.6s), `.reveal-delay-3` (0.9s)
+- Grid sections (Videos, Shorts, Testimonials) use per-row sequential staggering: first item no delay, second `reveal-delay-1`, third `reveal-delay-2` — repeat pattern for each row
 - Additional `.jump-reveal` class used for software cubes
 
 ### Counter animation
