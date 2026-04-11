@@ -674,23 +674,23 @@
     }
 
     /* ── Client Videos ── */
-    .client-videos {
+    .testimonials {
       padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 1;
     }
 
-    .client-videos h2 {
+    .testimonials h2 {
       margin: 0 auto 80px;
     }
 
-    .client-videos-grid {
+    .testimonials-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 32px;
     }
 
-    .client-video-item {
+    .testimonial-item {
       position: relative;
       border-radius: 8px;
       overflow: hidden;
@@ -699,13 +699,13 @@
       cursor: pointer;
     }
 
-    .client-video-item video {
+    .testimonial-item video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .client-video-name {
+    .testimonial-name-label {
       font-family: var(--heading);
       font-size: 0.9rem;
       letter-spacing: 0.1em;
@@ -715,7 +715,7 @@
     }
 
     @media (max-width: 768px) {
-      .client-videos-grid {
+      .testimonials-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1133,7 +1133,7 @@
     }
 
     /* ── Testimonials ── */
-    .testimonials {
+    .client-videos {
       padding: clamp(60px, 8vw, 120px) 0;
       position: relative;
       z-index: 2;
@@ -1141,19 +1141,19 @@
       overflow: hidden;
     }
 
-    .testimonials-bg {
+    .client-videos-bg {
       position: absolute;
       inset: 0;
       opacity: 0.15;
     }
 
-    .testimonials-bg div {
+    .client-videos-bg div {
       position: absolute;
       border-radius: 50%;
       filter: blur(100px);
     }
 
-    .testimonials-intro {
+    .client-videos-intro {
       text-align: center;
       font-size: 1.25rem;
       line-height: 1.8;
@@ -1162,7 +1162,7 @@
       margin: 0 auto 80px;
     }
 
-    .testimonials-grid {
+    .client-videos-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 80px;
@@ -1245,7 +1245,7 @@
     }
 
     @media (max-width: 768px) {
-      .testimonials-grid {
+      .client-videos-grid {
         grid-template-columns: 1fr;
         gap: 48px;
       }

@@ -70,14 +70,14 @@ CLAUDE.md                           # This file
 
 ## Key sections (in DOM order)
 
-1. **Header** — Fixed top nav with logo + navigation links (Home, Client Reviews, Portfolio Videos, Testimonials); becomes translucent with backdrop blur on scroll (`.scrolled` class)
+1. **Header** — Fixed top nav with logo + navigation links (Home, Testimonials, Portfolio Videos, Client Reviews); becomes translucent with backdrop blur on scroll (`.scrolled` class)
 2. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, Upwork/LinkedIn styled buttons (`.btn-badge` with local SVG logos), scroll hint
-3. **Clients Talk About Me** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid
+3. **Testimonials** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid; CSS class `.testimonials` with `.testimonial-item`, `.testimonial-name-label`
 4. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
 5. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
 6. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
-7. **Stats** (`#stats`) — Animated counter stats (30+ Clients, 160+ Projects, 3,081+ Videos) with world map SVG background and decorative dots
-8. **Testimonials** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid
+7. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) with world map SVG background and decorative dots
+8. **Clients Talk About Me** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid; CSS class `.client-videos` with `.client-videos-bg`, `.client-videos-intro`, `.client-videos-grid`
 9. **Footer** — 3-column grid with nav links, CTA + Upwork/LinkedIn buttons (stacked, LinkedIn first) + badge note, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
 
 ## JavaScript architecture (modular ES modules)
@@ -139,7 +139,7 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - Styles in external `assets/css/main.css` — no inline styles (except minimal inline `style` attributes in HTML)
 - Scripts in external `assets/js/` modules — no inline JS
 - SVG icons are inline in HTML throughout (no icon library)
-- Section IDs don't always match their visual names (e.g., `#about` is the "Clients Talk About Me" section)
+- Section IDs don't always match their visual names (e.g., `#about` is the "Testimonials" video section, `#testimonials` is the "Clients Talk About Me" text section)
 - Videos are referenced by full R2 URLs (e.g., `https://pub-6890b9cbc87c49a184b78dd8d6cd46cb.r2.dev/videos/wla3GQNoP5Y.mp4`)
 - The `videos/` directory is gitignored — canonical copies live on R2
 - Three.js is loaded as a global via CDN `<script>` tag before the module scripts
