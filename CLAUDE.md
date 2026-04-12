@@ -100,7 +100,8 @@ CLAUDE.md                           # This file
 7. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) with world map SVG background and decorative dots
 8. **Clients Talk About Me** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid; CSS class `.client-videos` with `.client-videos-bg`, `.client-videos-intro`, `.client-videos-grid`
 9. **Non client work** (`#non-client-work`) — Personal/non-client portfolio: 6 vertical shorts (9:16) followed by 6 horizontal videos (16:9), combined in a single section. Reuses `.shorts-grid`/`.short-item` and `.videos-grid`/`.video-item` classes so no new CSS was needed
-10. **Footer** — 3-column grid with nav links, CTA + Upwork/LinkedIn buttons (stacked, LinkedIn first) + badge note, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
+10. **Contact** (`#contact`) — Dedicated closing section with an availability pill ("Now accepting select projects" + pulsing green dot), tagline heading, LinkedIn + Upwork `.btn-badge` buttons, and the Top 3% badge note. Owns the `#contact` anchor (formerly on the footer)
+11. **Footer** — Minimal strip: social icons (YouTube, Instagram, Behance), brand logo + "Sifrifana" wordmark, copyright; single row on desktop, stacked on mobile
 
 ## JavaScript architecture (modular ES modules)
 
