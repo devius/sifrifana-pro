@@ -323,5 +323,26 @@ import { initSoftwareCubes } from './three-software.js';
     }));
 
 
+    /* ── Stats parallax (heading moves with world map) ── */
+    const statsSection = document.getElementById('stats');
+    const statsGlobe = statsSection?.querySelector('.stats-globe');
+    const statsHeading = statsSection?.querySelector('.heading');
+    if (statsSection && statsGlobe && statsHeading) {
+      let ticking = false;
+      const updateStatsParallax = () => {
+        const rect = statsSection.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const progress = (vh - rect.top) / (vh + rect.height);
+        const offset = (progress - 0.5) * 120;
+        statsGlobe.style.transform = `translateY(${offset}px)`;
+        statsHeading.style.transform = `translateY(${offset}px)`;
+        ticking = false;
+      };
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(updateStatsParallax); ticking = true; }
+      }, { passive: true });
+      updateStatsParallax();
+    }
+
 initBackground();
 initSoftwareCubes();
