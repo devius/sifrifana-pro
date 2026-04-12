@@ -20,7 +20,10 @@ import { initGlobe } from './three-globe.js';
       const fsBtn = wrapper.querySelector('.vid-fullscreen');
       wrapper.classList.remove('video-fullscreen-active');
       document.body.style.overflow = '';
-      if (fsBtn) fsBtn.innerHTML = fullscreenSvg;
+      if (fsBtn) {
+        fsBtn.innerHTML = fullscreenSvg;
+        fsBtn.setAttribute('aria-label', 'Enter fullscreen');
+      }
       // Restore wrapper to its original DOM position
       if (fullscreenPlaceholder && fullscreenPlaceholder.parentElement) {
         fullscreenPlaceholder.parentElement.replaceChild(wrapper, fullscreenPlaceholder);
@@ -52,7 +55,10 @@ import { initGlobe } from './three-globe.js';
       document.body.appendChild(wrapper);
       wrapper.classList.add('video-fullscreen-active');
       document.body.style.overflow = 'hidden';
-      if (fsBtn) fsBtn.innerHTML = exitFullscreenSvg;
+      if (fsBtn) {
+        fsBtn.innerHTML = exitFullscreenSvg;
+        fsBtn.setAttribute('aria-label', 'Exit fullscreen');
+      }
       fullscreenWrapper = wrapper;
       syncBackground();
     }
@@ -179,22 +185,6 @@ import { initGlobe } from './three-globe.js';
           playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
           playBtn.setAttribute('aria-label', 'Pause video');
         } else {
-          if (wrapper.classList.contains('video-fullscreen-active')) {
-            exitFullscreen(wrapper, true);
-          } else {
-            video.pause();
-            currentVideo = null;
-            syncBackground();
-            overlay.classList.remove('hidden');
-            playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
-            playBtn.setAttribute('aria-label', 'Play video');
-          }
-        }
-      });
-
-      wrapper.addEventListener('click', e => {
-        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress') || e.target.closest('.vid-fullscreen')) return;
-        if (!video.paused) {
           video.pause();
           currentVideo = null;
           syncBackground();
@@ -204,12 +194,64 @@ import { initGlobe } from './three-globe.js';
         }
       });
 
+      wrapper.addEventListener('click', e => {
+        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress') || e.target.closest('.vid-fullscreen')) return;
+        clearTimeout(clickPauseTimer);
+        clickPauseTimer = setTimeout(() => {
+          if (video.paused) {
+            playBtn.click();
+          } else {
+            video.pause();
+            currentVideo = null;
+            syncBackground();
+            overlay.classList.remove('hidden');
+            playBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><polygon points="5,3 17,10 5,17"/></svg>';
+            playBtn.setAttribute('aria-label', 'Play video');
+          }
+        }, 250);
+      });
+
       muteBtn.addEventListener('click', e => {
         e.stopPropagation();
         video.muted = !video.muted;
         muteBtn.innerHTML = video.muted ? mutedSvg : unmutedSvg;
         muteBtn.title = video.muted ? 'Unmute' : 'Mute';
         muteBtn.setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
+      });
+
+      // Auto-hide controls while playing
+      let idleTimer = null;
+      function scheduleHide() {
+        clearTimeout(idleTimer);
+        if (video.paused) return;
+        idleTimer = setTimeout(() => { wrapper.classList.add('controls-idle'); }, 2500);
+      }
+      function showControls() {
+        wrapper.classList.remove('controls-idle');
+        scheduleHide();
+      }
+      video.addEventListener('play', () => {
+        wrapper.classList.add('has-played');
+        scheduleHide();
+      });
+      video.addEventListener('pause', () => {
+        clearTimeout(idleTimer);
+        wrapper.classList.remove('controls-idle');
+      });
+      wrapper.addEventListener('mousemove', showControls);
+      wrapper.addEventListener('touchstart', showControls, { passive: true });
+
+      // Double-click toggles fullscreen; defer single-click pause so it doesn't fire first
+      let clickPauseTimer = null;
+      wrapper.addEventListener('dblclick', e => {
+        if (e.target.closest('.vid-mute') || e.target.closest('.vid-play') || e.target.closest('.vid-progress') || e.target.closest('.vid-fullscreen')) return;
+        clearTimeout(clickPauseTimer);
+        clickPauseTimer = null;
+        if (wrapper.classList.contains('video-fullscreen-active')) {
+          exitFullscreen(wrapper, false);
+        } else {
+          enterFullscreen(wrapper);
+        }
       });
 
       video.addEventListener('ended', () => {
@@ -228,7 +270,7 @@ import { initGlobe } from './three-globe.js';
     const videoObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) return;
-        const wrapper = e.target.closest('.video-wrapper') || e.target.parentElement;
+        const wrapper = e.target.closest('.video-item') || e.target.parentElement;
         const video = e.target;
         if (video.paused) return;
         if (wrapper.classList.contains('video-fullscreen-active')) return;
