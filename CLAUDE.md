@@ -40,20 +40,22 @@ index.html                          # Markup only (no inline styles or scripts)
 assets/
   css/main.css                      # All styles
   js/
-    app.js                          # Main entry point (imports config, three-bg, three-software)
+    app.js                          # Main entry point (imports config, three-bg, three-software, three-globe)
     config.js                       # Exported constants: SVG icon strings, testimonials array
     three-bg.js                     # WebGL particle tunnel background (initBackground)
     three-software.js               # 3D interactive software cubes (initSoftwareCubes)
+    three-globe.js                  # 3D rotating Earth in Stats section (initGlobe)
   img/
     favicon.svg                     # SVG favicon (constellation icon from hero section)
     sifrifana.png                   # Hero portrait photo (used 3 times for chromatic aberration effect)
+    earth-night.jpg                 # 2K equirectangular Earth night-lights texture (Solar System Scope, CC-BY)
     software/                       # Software logo textures (premiere.png, capcut.png, photoshop.png, lightroom.png)
     logos/                          # Platform logos (linkedin.svg, upwork.svg)
     thumbnails/                     # YouTube video thumbnails (maxresdefault.jpg per video ID)
 scripts/
   upload-video.sh                   # Downloads YouTube video + thumb, uploads to R2, prints URLs
 videos/                             # Local MP4 files (gitignored) — canonical copies live on R2
-world.svg                           # World map SVG used in Stats section
+world.svg                           # Equirectangular world map SVG (legacy, no longer used after globe swap)
 .github/workflows/static.yml        # Cloudflare Pages auto-deploy workflow
 CLAUDE.md                           # This file
 .gitignore                          # Ignores videos/, .claude/, .DS_Store, node_modules/, .wrangler/
@@ -97,7 +99,7 @@ CLAUDE.md                           # This file
 4. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
 5. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
 6. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
-7. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) with world map SVG background and decorative dots
+7. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) centered over a 3D rotating Earth globe (Three.js `SphereGeometry` with equirectangular night-lights texture, scroll-reactive spin)
 8. **Clients Talk About Me** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid; CSS class `.client-videos` with `.client-videos-bg`, `.client-videos-intro`, `.client-videos-grid`
 9. **Non client work** (`#non-client-work`) — Personal/non-client portfolio: 6 vertical shorts (9:16) followed by 6 horizontal videos (16:9), combined in a single section. Reuses `.shorts-grid`/`.short-item` and `.videos-grid`/`.video-item` classes so no new CSS was needed
 10. **Contact** (`#contact`) — Dedicated closing section with an availability pill ("Now accepting select projects" + pulsing green dot), tagline heading, LinkedIn + Upwork `.btn-badge` buttons, and the Top 3% badge note. Owns the `#contact` anchor (formerly on the footer)
@@ -108,7 +110,7 @@ CLAUDE.md                           # This file
 JS is split across 4 files in `assets/js/`, loaded via `<script type="module" src="assets/js/app.js">`.
 
 ### app.js (main entry)
-Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM interaction logic:
+Imports from `config.js`, `three-bg.js`, `three-software.js`, `three-globe.js`. Contains all DOM interaction logic:
 
 ### Video player controls
 - Event delegation via `querySelectorAll('.video-overlay')` — handles play/pause, mute, and click-to-pause
@@ -160,6 +162,14 @@ Imports from `config.js`, `three-bg.js`, `three-software.js`. Contains all DOM i
 - Idle animation: gentle sinusoidal rotation
 - Drag interaction: mouse/touch drag rotates the cube
 - Responsive sizing (120px mobile, 160px desktop)
+
+### three-globe.js — `initGlobe()`
+- Single Three.js scene mounted into `#globe-container` inside the Stats section
+- `SphereGeometry(2, 64, 64)` with `MeshStandardMaterial` — `map` + `emissiveMap` both set to `earth-night.jpg` so city lights self-illuminate
+- Cyan `DirectionalLight` from the left creates a terminator; dim navy `AmbientLight` fills the shadow side
+- Transparent renderer (`alpha: true`) — no halo/atmosphere sphere, canvas shows through to the page background
+- Idle rotation on Y-axis (`0.0015` rad/frame); scroll distance accumulates into a `scrollBoost` (capped at 0.15) that decays each frame, so scrolling spins the Earth faster and eases back
+- Responsive sizing: `min(500, 90vw)` px square, updates on resize
 
 ## Important conventions
 
