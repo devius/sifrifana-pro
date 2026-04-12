@@ -88,6 +88,13 @@
       text-transform: uppercase;
       color: var(--text);
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      flex-shrink: 0;
     }
 
     .nav {
