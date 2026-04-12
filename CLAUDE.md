@@ -91,15 +91,16 @@ CLAUDE.md                           # This file
 
 ## Key sections (in DOM order)
 
-1. **Header** — Fixed top nav with logo + navigation links (Home, Testimonials, Portfolio Videos, Client Reviews); becomes translucent with backdrop blur on scroll (`.scrolled` class)
+1. **Header** — Fixed top nav with logo + navigation links (Home, Testimonials, Portfolio Videos, Non client work, Client Reviews); becomes translucent with backdrop blur on scroll (`.scrolled` class)
 2. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, Upwork/LinkedIn styled buttons (`.btn-badge` with local SVG logos), scroll hint
 3. **Testimonials** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid; CSS class `.testimonials` with `.testimonial-item`, `.testimonial-name-label`
-4. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
-5. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
-6. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
-7. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) with world map SVG background and decorative dots
-8. **Clients Talk About Me** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid; CSS class `.client-videos` with `.client-videos-bg`, `.client-videos-intro`, `.client-videos-grid`
-9. **Footer** — 3-column grid with nav links, CTA + Upwork/LinkedIn buttons (stacked, LinkedIn first) + badge note, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
+4. **Non client work** (`#non-client-work`) — Personal/non-client portfolio: 6 vertical shorts (9:16) followed by 6 horizontal videos (16:9), combined in a single section. Reuses `.shorts-grid`/`.short-item` and `.videos-grid`/`.video-item` classes so no new CSS was needed
+5. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
+6. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
+7. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
+8. **Stats** (`#stats`) — Animated counter stats (100+ Clients, 500+ Projects, 5,000+ Videos) with world map SVG background and decorative dots
+9. **Clients Talk About Me** (`#testimonials`) — Dynamically generated from JS array (12 testimonials) in a 2-column grid; CSS class `.client-videos` with `.client-videos-bg`, `.client-videos-intro`, `.client-videos-grid`
+10. **Footer** — 3-column grid with nav links, CTA + Upwork/LinkedIn buttons (stacked, LinkedIn first) + badge note, social icons (YouTube, Instagram, Behance); bottom bar with logo + copyright
 
 ## JavaScript architecture (modular ES modules)
 
