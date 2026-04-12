@@ -1,6 +1,7 @@
 import { mutedSvg, unmutedSvg, fullscreenSvg, exitFullscreenSvg, testimonials } from './config.js';
 import { initBackground, pauseBackground, resumeBackground } from './three-bg.js';
 import { initSoftwareCubes } from './three-software.js';
+import { initGlobe } from './three-globe.js';
 
     /* ── Video player controls ── */
             let currentVideo = null;
@@ -346,3 +347,4 @@ import { initSoftwareCubes } from './three-software.js';
 
 initBackground();
 initSoftwareCubes();
+initGlobe();

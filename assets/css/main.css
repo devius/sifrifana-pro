@@ -1134,17 +1134,27 @@
 
     /* ── Stats ── */
     .stats {
-      padding: clamp(60px, 8vw, 120px) 0;
+      padding: clamp(160px, 18vw, 280px) 0;
       position: relative;
       z-index: 2;
       /* background removed — fog reveals over flat body bg */
-      overflow: hidden;
     }
 
     .stats-globe {
       position: absolute;
       inset: 0;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    #globe-container {
+      display: block;
+      line-height: 0;
+    }
+    #globe-container canvas {
+      display: block;
     }
 
     .stats-ring {
