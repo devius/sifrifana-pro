@@ -95,7 +95,7 @@ CLAUDE.md                           # This file
 
 1. **Header** — Fixed top nav with logo + navigation links (Home, Testimonials, Portfolio Videos, Non client work, Client Reviews); becomes translucent with backdrop blur on scroll (`.scrolled` class)
 2. **Hero** (`#hero`) — Photo with chromatic aberration, SIFRIFANA branding, tagline, Upwork/LinkedIn styled buttons (`.btn-badge` with local SVG logos), scroll hint
-3. **Testimonials** (`#about`) — 3 client testimonial videos (Karl, David, Lucas) in a 3-column grid; CSS class `.testimonials` with `.testimonial-item`, `.testimonial-name-label`
+3. **Testimonials** (`#about`) — 4 client testimonial videos (Dani, Karl, David, Lucas) in a 2-column grid (1-col at ≤600px); CSS class `.testimonials` with `.testimonial-item`, `.testimonial-name-label`
 4. **Videos** (`#videos`) — 6 portfolio videos in a 3-column grid (responsive: 2-col at 1024px, 1-col at 600px) with subtitle text
 5. **Shorts** — 6 vertical (9:16) short-form videos in a 3-column grid (responsive: 2-col at 768px, 1-col at 600px)
 6. **Premium Editing Software** — 4 interactive 3D cubes (Premiere Pro, CapCut, Photoshop, Lightroom) rendered with Three.js; draggable with idle animation
