@@ -33,6 +33,26 @@ Deploying content changes is a two-step process because videos are hosted separa
 
 Videos are NOT in the git repo (`videos/` is gitignored) — they live only on R2. The local `videos/` directory is a workspace for downloading/processing before upload.
 
+### Video encoding requirements
+
+**iOS Safari does NOT support AV1 or VP9.** All videos served from R2 must use **H.264 (AVC)** for the video stream and **AAC** for audio, in an MP4 container. yt-dlp will sometimes pick AV1 as the highest-quality format from YouTube — verify with `ffprobe -v error -show_entries stream=codec_name <file>` before uploading.
+
+If the source is AV1/VP9, re-encode to H.264 before uploading:
+
+```bash
+ffmpeg -i input.mp4 \
+  -vf "scale=-2:1920" \
+  -c:v libx264 -profile:v high -pix_fmt yuv420p -preset slow -crf 22 \
+  -movflags +faststart \
+  -c:a aac -b:a 128k \
+  output.mp4
+```
+
+- `-pix_fmt yuv420p` is required for broad browser/iOS compatibility (not yuv444p).
+- `-movflags +faststart` moves the moov atom to the front so playback can start before the file is fully buffered.
+- `-vf "scale=-2:1920"` caps vertical shorts at 1920px tall (omit for 16:9 horizontal videos, or use `scale=1920:-2`).
+- Re-upload with `wrangler r2 object put sifrifana-videos/videos/<id>.mp4 --file=<file> --content-type=video/mp4 --remote` (set `CLOUDFLARE_ACCOUNT_ID=4dc18a7d9c10a7bda303d781473a8cc2`).
+
 ## File structure
 
 ```
