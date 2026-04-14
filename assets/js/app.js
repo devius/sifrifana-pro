@@ -266,11 +266,12 @@ import { initGlobe } from './three-globe.js';
       });
     });
 
-    /* ── Auto-pause videos when scrolled out of viewport ── */
-    const videoObs = new IntersectionObserver(entries => {
+    /* ── Auto-pause videos when scrolled under the header or out of viewport ── */
+    let videoObs = null;
+    function handleVideoIntersect(entries) {
       entries.forEach(e => {
         if (e.isIntersecting) return;
-        const wrapper = e.target.closest('.video-item') || e.target.parentElement;
+        const wrapper = e.target.closest('.video-item, .short-item, .testimonial-item') || e.target.parentElement;
         const video = e.target;
         if (video.paused) return;
         if (wrapper.classList.contains('video-fullscreen-active')) return;
@@ -285,8 +286,23 @@ import { initGlobe } from './three-globe.js';
           playBtn.setAttribute('aria-label', 'Play video');
         }
       });
-    }, { threshold: 0 });
-    document.querySelectorAll('video').forEach(v => videoObs.observe(v));
+    }
+    function buildVideoObs() {
+      if (videoObs) videoObs.disconnect();
+      const headerEl = document.getElementById('header');
+      const h = headerEl ? headerEl.offsetHeight : 0;
+      videoObs = new IntersectionObserver(handleVideoIntersect, {
+        threshold: 0,
+        rootMargin: `-${h}px 0px 0px 0px`
+      });
+      document.querySelectorAll('video').forEach(v => videoObs.observe(v));
+    }
+    buildVideoObs();
+    let resizeTimer = null;
+    addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(buildVideoObs, 150);
+    }, { passive: true });
 
     /* ── Scroll handling ── */
     function onScroll() {
@@ -300,7 +316,12 @@ import { initGlobe } from './three-globe.js';
 
     /* ── Scroll reveal (IntersectionObserver) ── */
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } else { e.target.classList.remove('visible'); } });
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
     }, { threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
